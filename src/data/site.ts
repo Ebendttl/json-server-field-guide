@@ -160,13 +160,13 @@ const brandPresets: Record<BrandPresetKey, BrandConfig> = {
 const brandPreset: BrandPresetKey = 'primary'
 
 export const siteConfig: SiteConfig = {
-  name: 'Site',
+  name: 'JSON Server Field Guide',
   description:
-    'Documentation for Site.',
-  repoUrl: '',
+    'An unofficial, example-driven companion for json-server@1.0.0-beta.15. Every claim is backed by a recorded fixture.',
+  repoUrl: 'https://github.com/Ebendttl/json-server-field-guide',
   links: [
-    { label: 'Get started', href: '/quickstart' },
-    { label: 'Changelog', href: '/changelog' },
+    { label: 'Quickstart', href: '/quickstart' },
+    { label: 'Verification', href: '/verification' },
   ],
   brand: brandPresets[brandPreset],
   brandPreset,
