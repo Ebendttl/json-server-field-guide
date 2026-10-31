@@ -1,47 +1,211 @@
 ---
 title: Quickstart
-description: Guide a new reader through one useful workflow and show them how to verify it.
+description: Install JSON Server, start a REST API from a JSON file, and make your first read and write requests in about five minutes.
+navTitle: Quickstart
+keywords:
+  - json-server install
+  - db.json
+  - REST API
+timeEstimate: 5 min
+lastVerified: 2026-10-30
+verifiedVersion: 1.0.0-beta.15
 ---
 
-A strong quickstart produces one meaningful result. Replace the placeholders
-below with the shortest supported path for your product.
+After this guide, you will have a local REST API running at `http://localhost:3000` that serves data from a JSON file and saves changes back to it.
 
-## Before you begin
+## Prerequisites
 
-List only the requirements needed for this workflow:
+- Node.js 22.12 or newer and `npm`. This version of JSON Server declares `>=22.12.0` as its minimum. Check yours with `node -v`.
+- A terminal and an HTTP client such as `curl`.
 
-- An account or credential, when required
-- A supported runtime, device, browser, or operating system
-- Permission to create or change the resource used in the example
+<Note type="warning" title="Version note">
+JSON Server 1.x is published as a beta. The commands below use the exact version `1.0.0-beta.15` so you get the same behavior this guide describes. Query parameters differ from the older 0.x releases, so avoid copying examples written for 0.x.
+</Note>
 
 <Steps>
-  <Step title="Install the required tool">
-    Give readers one recommended installation command.
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Add the minimum configuration">
-    Include only the values needed for the first successful run.
+<Step title="Create a data file">
+Create a folder and add a file named `db.json`:
 
-    ```bash
-    your-cli init
-    ```
-  </Step>
-  <Step title="Complete the first task">
-    Use a realistic example that produces an observable result.
+```bash
+mkdir mock-api && cd mock-api
+```
 
-    ```bash
-    your-cli start
-    ```
-  </Step>
-  <Step title="Verify the result">
-    State exactly what the reader should see and how to recover when it does not appear.
-  </Step>
+```json title="db.json"
+{
+  "posts": [
+    { "id": "1", "title": "Hello JSON Server", "views": 100, "authorId": "1" },
+    { "id": "2", "title": "Filtering and sorting", "views": 250, "authorId": "1" },
+    { "id": "3", "title": "Pagination basics", "views": 40, "authorId": "2" }
+  ],
+  "authors": [
+    { "id": "1", "name": "Ada" },
+    { "id": "2", "name": "Linus" }
+  ],
+  "profile": { "name": "demo" }
+}
+```
+
+Every top-level key becomes an endpoint. Arrays become collections, and objects become single resources.
+</Step>
+
+<Step title="Start the server">
+Run JSON Server with `npx`. You do not need to install anything globally:
+
+```bash
+npx json-server@1.0.0-beta.15 db.json
+```
+
+You should see output that includes:
+
+```text
+JSON Server started on PORT :3000
+Watching db.json...
+
+Endpoints:
+http://localhost:3000/posts
+http://localhost:3000/authors
+http://localhost:3000/profile
+```
+
+Leave this terminal running and open a second one for the next steps.
+</Step>
+
+<Step title="Read your data">
+Fetch the whole collection, then a single post, then the `profile` object:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl http://localhost:3000/posts
+curl http://localhost:3000/posts/1
+curl http://localhost:3000/profile
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod http://localhost:3000/posts
+Invoke-RestMethod http://localhost:3000/posts/1
+Invoke-RestMethod http://localhost:3000/profile
+```
+</Tab>
+</Tabs>
+
+The single-post request returns one record:
+
+```json
+{
+  "id": "1",
+  "title": "Hello JSON Server",
+  "views": 100,
+  "authorId": "1"
+}
+```
+</Step>
+
+<Step title="Create and update a record">
+Add a post, then change its view count:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl -X POST http://localhost:3000/posts \
+  -H "Content-Type: application/json" \
+  -d '{"title":"My first post","views":0,"authorId":"2"}'
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod http://localhost:3000/posts -Method Post `
+  -ContentType "application/json" `
+  -Body '{"title":"My first post","views":0,"authorId":"2"}'
+```
+</Tab>
+</Tabs>
+
+The response includes a generated `id`, for example:
+
+```json
+{
+  "title": "My first post",
+  "views": 0,
+  "authorId": "2",
+  "id": "<generated>"
+}
+```
+
+Your generated `id` will differ. Use the value from the response in later requests.
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl -X PATCH http://localhost:3000/posts/1 \
+  -H "Content-Type: application/json" \
+  -d '{"views":101}'
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod http://localhost:3000/posts/1 -Method Patch `
+  -ContentType "application/json" `
+  -Body '{"views":101}'
+```
+</Tab>
+</Tabs>
+
+`PATCH` changes only the fields you send. The response shows the full updated post with `"views": 101`.
+</Step>
+
+<Step title="Verify the changes were saved">
+Open `db.json` in your editor. The new post and the updated view count are now in the file. Because JSON Server writes to the file, the data is still there after you stop and restart the server.
+
+Delete a post to confirm that works too:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl -i -X DELETE http://localhost:3000/posts/3
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod http://localhost:3000/posts/3 -Method Delete
+```
+</Tab>
+</Tabs>
+
+A successful delete returns status `200` with the deleted record as the response body. Requesting `/posts/3` again now returns `404`.
+</Step>
+
 </Steps>
 
-## Choose the next task
+## Check your result
 
-Link to the guide that naturally follows this result. Avoid ending the reader’s
-journey with a generic list of every feature.
+You are done when all of these are true:
+
+- `curl http://localhost:3000/posts` returns a JSON array.
+- Your new post appears in `db.json`.
+- `curl -i http://localhost:3000/posts/999` returns `404`.
+
+## Common problems
+
+| Problem | What to check |
+| --- | --- |
+| `EADDRINUSE` or the server does not start | Another process is using port 3000. Start on a different port with `-p 4000`. |
+| `curl` returns `[]` for a collection | The key in `db.json` is empty, or you requested the wrong name. Endpoint names match the top-level keys exactly. |
+| The server starts but a collection is missing | Check that `db.json` is valid JSON. A trailing comma is a common cause. |
+| Changes you made by hand are not reflected | Save the file. JSON Server watches `db.json` and reloads when it changes. |
+
+Command-line options available in this version:
+
+| Option | Purpose |
+| --- | --- |
+| `-p, --port <port>` | Set the port. Default is `3000`. |
+| `-h, --host <host>` | Set the host. Default is `localhost`. Note that `-h` sets the host, not help. |
+| `-s, --static <dir>` | Serve static files from a directory. |
+| `--help` | Show usage. |
+
+## Next steps
+
+- [Build a mock API for a frontend app](/guides/build-a-mock-api) to model related data, query it, and reset it between runs.
+- Return to the [introduction](/introduction) to review when JSON Server is and is not the right tool.

@@ -1,0 +1,307 @@
+---
+title: Build a mock API for a frontend app
+description: Model related data, filter, sort, and paginate it, call it from JavaScript, and reset it between test runs.
+navTitle: Build a mock API
+keywords:
+  - json-server filtering
+  - json-server pagination
+  - _embed
+  - mock backend
+timeEstimate: 15 min
+lastVerified: 2026-10-30
+verifiedVersion: 1.0.0-beta.15
+---
+
+After this guide, you will have a mock task-tracker API with two related collections, queries your frontend can reuse, a JavaScript client that calls it, and a one-command reset so every test run starts from the same data.
+
+## Prerequisites
+
+- Completed the [Quickstart](/quickstart), or comfortable running `npx json-server`.
+- Node.js 22.12 or newer. This guide was tested on Node.js 22 with `json-server@1.0.0-beta.15`.
+
+## Set up the project
+
+<Steps>
+
+<Step title="Create the project and install JSON Server">
+Installing it as a dev dependency pins the version for everyone on your team:
+
+```bash
+mkdir task-mock && cd task-mock
+npm init -y
+npm install --save-dev json-server@1.0.0-beta.15
+```
+</Step>
+
+<Step title="Add a seed file">
+Create `db.seed.json`. This is your clean starting data, and you will commit it to Git. The working file `db.json` is generated from it.
+
+```json title="db.seed.json"
+{
+  "projects": [
+    { "id": "1", "name": "Website relaunch" },
+    { "id": "2", "name": "Mobile app" }
+  ],
+  "tasks": [
+    { "id": "1", "title": "Draft homepage copy", "status": "open", "priority": 2, "projectId": "1" },
+    { "id": "2", "title": "Design navigation", "status": "done", "priority": 3, "projectId": "1" },
+    { "id": "3", "title": "Set up CI", "status": "open", "priority": 3, "projectId": "2" },
+    { "id": "4", "title": "Write release notes", "status": "open", "priority": 1, "projectId": "2" },
+    { "id": "5", "title": "Fix login bug", "status": "blocked", "priority": 3, "projectId": "2" }
+  ]
+}
+```
+
+Each task points to its project through `projectId`. That naming convention (`<singular name>Id`) is what lets JSON Server connect the two collections.
+</Step>
+
+<Step title="Add start and reset scripts">
+In `package.json`, replace the `scripts` section:
+
+```json title="package.json (scripts)"
+{
+  "scripts": {
+    "mock": "json-server db.json",
+    "mock:reset": "node -e \"require('fs').copyFileSync('db.seed.json','db.json')\""
+  }
+}
+```
+
+The reset script uses a Node one-liner so it works on macOS, Linux, and Windows without any platform-specific shell commands.
+</Step>
+
+<Step title="Create the data and start the server">
+```bash
+npm run mock:reset
+npm run mock
+```
+
+You should see `projects` and `tasks` listed under **Endpoints**.
+</Step>
+
+</Steps>
+
+Add `db.json` to `.gitignore` so test writes never end up in your commits:
+
+```text
+db.json
+```
+
+## Query your data
+
+Run these in a second terminal. Responses below are shortened to the fields that matter.
+
+### Filter
+
+Match a field exactly, or use an operator suffix such as `:gte` or `:ne`:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl "http://localhost:3000/tasks?status=open"
+curl "http://localhost:3000/tasks?status=open&priority:gte=2"
+curl "http://localhost:3000/tasks?status:ne=done"
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod "http://localhost:3000/tasks?status=open"
+Invoke-RestMethod "http://localhost:3000/tasks?status=open&priority:gte=2"
+Invoke-RestMethod "http://localhost:3000/tasks?status:ne=done"
+```
+</Tab>
+</Tabs>
+
+The second request returns tasks `1` and `3`: open tasks with a priority of 2 or higher.
+
+### Sort
+
+Prefix a field with `-` for descending order, and separate several fields with commas:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl "http://localhost:3000/tasks?_sort=-priority,title"
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod "http://localhost:3000/tasks?_sort=-priority,title"
+```
+</Tab>
+</Tabs>
+
+Tasks with priority `3` come first, then priority `2`, then priority `1`, with ties broken alphabetically by title.
+
+### Paginate
+
+Use `_page` and `_per_page` together:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl "http://localhost:3000/tasks?_page=2&_per_page=2"
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod "http://localhost:3000/tasks?_page=2&_per_page=2"
+```
+</Tab>
+</Tabs>
+
+A paginated request returns an object instead of an array:
+
+```json
+{
+  "first": 1,
+  "prev": 1,
+  "next": 3,
+  "last": 3,
+  "pages": 3,
+  "items": 5,
+  "data": [
+    { "id": "3", "title": "Set up CI", "status": "open", "priority": 3, "projectId": "2" },
+    { "id": "4", "title": "Write release notes", "status": "open", "priority": 1, "projectId": "2" }
+  ]
+}
+```
+
+Read the records from `data` and use `next` to know whether another page exists. You can combine pagination with filters and sorting:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl "http://localhost:3000/tasks?status=open&_sort=-priority&_page=1&_per_page=2"
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod "http://localhost:3000/tasks?status=open&_sort=-priority&_page=1&_per_page=2"
+```
+</Tab>
+</Tabs>
+
+### Include related records
+
+Use `_embed` to attach related data. From a task, include its project:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl "http://localhost:3000/tasks/3?_embed=project"
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod "http://localhost:3000/tasks/3?_embed=project"
+```
+</Tab>
+</Tabs>
+
+```json
+{
+  "id": "3",
+  "title": "Set up CI",
+  "status": "open",
+  "priority": 3,
+  "projectId": "2",
+  "project": { "id": "2", "name": "Mobile app" }
+}
+```
+
+From a project, include all of its tasks:
+
+<Tabs>
+<Tab title="curl">
+```bash
+curl "http://localhost:3000/projects/2?_embed=tasks"
+```
+</Tab>
+<Tab title="PowerShell">
+```powershell
+Invoke-RestMethod "http://localhost:3000/projects/2?_embed=tasks"
+```
+</Tab>
+</Tabs>
+
+The response contains the project with a `tasks` array of tasks `3`, `4`, and `5`.
+
+## Call the API from JavaScript
+
+Create `client.mjs`. Node.js 22 includes `fetch`, so no extra dependency is needed:
+
+```js title="client.mjs"
+const base = "http://localhost:3000";
+
+const res = await fetch(`${base}/tasks?status=open&_sort=-priority`);
+if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+const tasks = await res.json();
+console.log(tasks.map((t) => `${t.priority} ${t.title}`).join("\n"));
+
+const created = await fetch(`${base}/tasks`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    title: "Review pull request",
+    status: "open",
+    priority: 2,
+    projectId: "1",
+  }),
+});
+console.log(created.status, await created.json());
+```
+
+Run it:
+
+```bash
+node client.mjs
+```
+
+Expected output, with a different generated `id`:
+
+```text
+3 Set up CI
+2 Draft homepage copy
+1 Write release notes
+201 {
+  title: 'Review pull request',
+  status: 'open',
+  priority: 2,
+  projectId: '1',
+  id: '<generated>'
+}
+```
+
+## Reset the data between runs
+
+Your script just added a task, so `db.json` no longer matches the seed. Stop the server with `Ctrl+C`, then run:
+
+```bash
+npm run mock:reset
+npm run mock
+```
+
+Request `/tasks` again. You are back to five tasks. Run the reset before every automated test run so results are repeatable.
+
+## Troubleshooting
+
+| Problem | Cause and fix |
+| --- | --- |
+| `?projectId=2` returns an empty array | In the tested version, an equality filter on a string-typed foreign key matched nothing when compared against an unquoted query value. Fetch the parent with `projects/2?_embed=tasks` instead. |
+| `?status=open&status=blocked` returns only blocked tasks | Repeating a parameter does not combine the values in this version. The last value wins. Use `?status:in=open,blocked` instead. |
+| `?status=OPEN` returns `[]` | Equality filters are case-sensitive. `title:contains=` is case-insensitive in the tested version. |
+| `?_limit=1` returns `[]` | The `_limit` and `_start` parameters from 0.x releases return an empty array in this version. Use `_page` and `_per_page`. |
+| `?_per_page=2` still returns every record | Pagination only starts when `_page` is present. Send `_page` and `_per_page` together. |
+| `_embed` adds nothing | The foreign key must follow the `<singular name>Id` pattern, such as `projectId` pointing to `projects`, and the key and the target `id` must both be strings. A numeric `projectId: 2` did not match the string `id` `"2"`. |
+| New records have long random ids | JSON Server generates a string `id` on `POST`. In the tested version, an `id` you sent in the body was replaced by a generated one, and requesting your own value returned `404`. Read the generated `id` from the response. |
+
+<Note type="tip" title="Verify before you rely on a quirk">
+These behaviors describe `1.0.0-beta.15`. Because 1.x is a beta, re-run the request against your installed version before building around any of them.
+</Note>
+
+## Next steps
+
+- Return to the [Quickstart](/quickstart) to refresh the basics of running and writing data.
+- Read the [introduction](/introduction) to decide where JSON Server fits in your workflow.
+- See [How this guide was verified](/verification) for the full list of tested requests.

@@ -1,45 +1,56 @@
 ---
 title: Introduction
-description: Give readers a clear path from their first question to a result they can verify.
-mode: home
+description: Learn what JSON Server does, who it is for, and where to start when you need a working REST API in under a minute.
+keywords:
+  - json-server
+  - mock API
+  - fake REST API
+  - frontend prototyping
+timeEstimate: 3 min
+lastVerified: 2026-10-30
+verifiedVersion: 1.0.0-beta.15
 ---
 
-<Hero
-  title="Build documentation around the reader"
-  subtitle="Start with a useful first result, organize what follows, and publish every format from one reviewable source."
-  primaryLabel="Get started"
-  primaryHref="/quickstart"
-  secondaryLabel="Publish your docs"
-  secondaryHref="/guides/create-a-site"
-/>
+JSON Server turns a plain JSON file into a working REST API. You describe your data once in `db.json`, run one command, and your frontend can immediately read and write real HTTP endpoints.
 
-## Build the reader journey
+This field guide is an unofficial, example-driven companion for developers who want to use JSON Server confidently. It was tested against `json-server@1.0.0-beta.15` on Node.js 22. The minimum Node.js version it supports is 22.12.
 
-Begin with the task that brings most readers to your documentation, then make
-the next useful step obvious.
+<Note type="info" title="Unofficial guide">
+This site is an independent learning resource. It is not published by or affiliated with the JSON Server project or its maintainers. For the project itself, see the [JSON Server repository](https://github.com/typicode/json-server).
+</Note>
+
+## Who it is for
+
+JSON Server is a good fit when you are:
+
+- building a frontend before the real backend exists;
+- writing a tutorial, workshop, or demo that needs realistic data;
+- testing how your app handles lists, filters, pagination, and errors; or
+- reproducing a bug with a small, shareable data set.
+
+It is **not** a production database. It stores data in a single JSON file and has no authentication or access control, so keep it on your own machine or a trusted development network.
+
+## What you get from one JSON file
+
+| You write | JSON Server gives you |
+| --- | --- |
+| An array such as `"posts": [...]` | A collection at `/posts` and single items at `/posts/1` |
+| An object such as `"profile": {...}` | A single resource at `/profile` |
+| Fields on your records | Filtering, sorting, and pagination through query parameters |
+| A field such as `authorId` | Related records you can include with `_embed` |
+
+Writes (`POST`, `PATCH`, `DELETE`) are saved back to your JSON file, so your data survives a server restart.
+
+## Choose your next step
 
 <CardGroup cols="2">
-  <Card title="Write your quickstart" icon="party-horn" href="/quickstart">
-    Turn prerequisites, setup, one realistic task, and verification into a short path.
-  </Card>
-  <Card title="Organize your navigation" icon="grid-round" href="/customization">
-    Group related tasks and references around how people use your product.
-  </Card>
-  <Card title="Document your API" icon="code-simple" href="/api">
-    Replace `openapi.yaml` to publish browsable endpoint docs with a live playground.
-  </Card>
-  <Card title="Learn the Thally workflow" icon="wrench" href="/guides/create-a-site">
-    Create, publish, and update sites from the Cloud dashboard, the CLI, or your AI tools.
-  </Card>
+
+<Card title="Quickstart" href="/quickstart" icon="book-open">
+Start a mock API and make your first requests in about five minutes.
+</Card>
+
+<Card title="Build a mock API for a frontend app" href="/guides/build-a-mock-api" icon="wrench">
+Model related data, query it, and reset it between test runs.
+</Card>
+
 </CardGroup>
-
-## Publish from one source
-
-Thally turns the same reviewed content into HTML, search, agent discovery files,
-Markdown mirrors, and a read-only MCP surface — so people and AI tools read the
-same, current answer. Add only the locales your readers need.
-
-<Note type="info" title="Start with the product, not the template">
-  Replace this page with the questions, terminology, and workflows your readers
-  already use. Keep `docs.json` focused on the path between those tasks.
-</Note>
