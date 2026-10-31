@@ -1,0 +1,104 @@
+---
+title: How this guide was verified
+description: Every claim in the JSON Server Field Guide traces to a recorded HTTP request. This page explains the verification process and lists every tested fixture.
+navTitle: Verification
+keywords:
+  - json-server verification
+  - ground truth
+  - fixture testing
+timeEstimate: 5 min
+lastVerified: 2026-10-30
+verifiedVersion: 1.0.0-beta.15
+---
+
+Every example and behavioral claim in this guide was produced by running a real `json-server@1.0.0-beta.15` server on Node.js 22, issuing HTTP requests, and recording the responses. The recordings are stored in `fixtures.json` and can be replayed to verify the guide stays accurate.
+
+## Why verify
+
+JSON Server 1.x is a beta. Its query-parameter behavior differs from the widely documented 0.x releases, and several parameters that worked before now return empty arrays. Rather than guess at behavior, every claim in this guide traces to a specific fixture ID.
+
+## How the recordings were made
+
+1. A script starts a fresh `json-server` instance with a known dataset.
+2. It issues a sequence of HTTP requests (GET, POST, PATCH, PUT, DELETE).
+3. It records each response's status code and body.
+4. It snapshots `db.json` after each scenario to confirm writes persisted.
+
+Each scenario runs against a clean server. State carries across steps within a scenario but not between scenarios.
+
+## Datasets
+
+Two datasets seed the test server:
+
+| Dataset | Collections | Records |
+| --- | --- | --- |
+| `quickstart` | `posts` (3), `authors` (2), `profile` (object) | 5 records + 1 singleton |
+| `tasks` | `projects` (2), `tasks` (5) | 7 records |
+
+## Scenarios and fixture counts
+
+| Scenario | Dataset | Steps | What it covers |
+| --- | --- | --- | --- |
+| `quickstart-reads` | `quickstart` | 14 | GET collections, single resources, filters, sort, pagination, embed, 404 |
+| `quickstart-write` | `quickstart` | 10 | POST, PATCH, PUT, DELETE, profile PATCH, missing-id errors |
+| `tasks-filter-sort` | `tasks` | 35 | Equality, operators (`:gte`, `:ne`, `:lt`, `:lte`, `:gt`, `:eq`, `:in`, `:contains`, `:startsWith`, `:endsWith`), repeated params, multi-key sort, FK quirks, case sensitivity |
+| `tasks-paginate-embed` | `tasks` | 21 | `_page` + `_per_page`, `_limit`/`_start`/`_end` (return `[]`), `_embed` on single and collection, edge cases |
+| `tasks-write` | `tasks` | 11 | POST with/without custom id, PATCH, PUT, DELETE, cascade check, FK filter after delete |
+
+**Total: 91 recorded requests across 5 scenarios.**
+
+## Claim-to-fixture map
+
+The table below maps key claims in the guide to the fixture that proves them. The fixture ID format is `scenario[step]`.
+
+| Claim | Fixture ID |
+| --- | --- |
+| GET `/posts` returns a JSON array | `quickstart-reads[0]` |
+| GET `/posts/1` returns a single record | `quickstart-reads[1]` |
+| GET `/posts/999` returns 404 | `quickstart-reads[2]` |
+| GET `/profile` returns an object (singleton) | `quickstart-reads[5]` |
+| POST creates a record and returns 201 with generated id | `quickstart-write[0]` |
+| PATCH updates only the fields you send | `quickstart-write[1]` |
+| DELETE returns 200 with the deleted record | `quickstart-write[3]` |
+| GET after DELETE returns 404 | `quickstart-write[4]` |
+| PUT replaces the full record | `quickstart-write[5]` |
+| PATCH on `/profile` works (singleton) | `quickstart-write[6]` |
+| PATCH on missing id returns 404 | `quickstart-write[8]` |
+| DELETE on missing id returns 404 | `quickstart-write[9]` |
+| `?status=open` returns matching records | `tasks-filter-sort[5]` |
+| `?status=open&priority:gte=2` combines filters | `tasks-filter-sort[6]` |
+| `?status:ne=done` excludes a value | `tasks-filter-sort[7]` |
+| `:gt`, `:lt`, `:lte`, `:eq` operators work on numbers | `tasks-filter-sort[8]`–`[11]` |
+| `?status:in=open,blocked` matches multiple values | `tasks-filter-sort[12]` |
+| `?title:contains=release` is case-insensitive | `tasks-filter-sort[13]` |
+| `?title:startsWith=Set` matches prefix | `tasks-filter-sort[14]` |
+| Repeating a param keeps only the last value | `tasks-filter-sort[15]` |
+| `?_sort=-priority,title` sorts descending then ascending | `tasks-filter-sort[16]` |
+| `?status=OPEN` returns `[]` (case-sensitive equality) | `tasks-filter-sort[30]` |
+| `?projectId=2` returns `[]` (FK string quirk) | `tasks-filter-sort[20]` |
+| `?projectId:contains=2` matches as substring | `tasks-filter-sort[25]` |
+| `?_page=2&_per_page=2` returns pagination object | `tasks-paginate-embed[1]` |
+| `_per_page` without `_page` is ignored | `tasks-paginate-embed[4]` |
+| `?_limit=1` returns `[]` | `tasks-paginate-embed[9]` |
+| `?_start=0&_end=1` returns `[]` | `tasks-paginate-embed[10]` |
+| `?_embed=project` on single task embeds parent | `tasks-paginate-embed[15]` |
+| `/projects/2?_embed=tasks` embeds children | `tasks-paginate-embed[16]` |
+| `?_embed=nothing` is silently ignored | `tasks-paginate-embed[20]` |
+| POST ignores `id` in body, generates its own | `tasks-write[1]`, `tasks-write[2]` |
+| Deleting a parent does not cascade to children | `tasks-write[6]`–`[8]` |
+| Unknown routes return 404 | `quickstart-reads[13]` |
+
+## Running the fixtures yourself
+
+You can re-record the fixtures with the script in this repository:
+
+```bash
+node scripts/fg-record-fixtures.mjs
+```
+
+The script starts json-server, replays every scenario, and compares the recorded responses to `fixtures.json`. Any mismatch means a claim in the guide may need updating.
+
+## Next steps
+
+- Return to the [introduction](/introduction) for an overview of JSON Server.
+- Follow the [Quickstart](/quickstart) to try these requests yourself.
