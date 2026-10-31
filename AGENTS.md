@@ -71,7 +71,42 @@ upgrade an existing site or move a production release pointer.
 
 ## Product context
 
-<!-- Add canonical terminology, audience details, and content boundaries here. -->
+This is the **JSON Server Field Guide**, an unofficial, example-driven
+companion for `json-server@1.0.0-beta.15`. It is a portfolio project by
+Ebenezer Akinseinde Akindele.
+
+### Terminology
+
+- **Fixture**: a recorded HTTP request/response pair from a real json-server
+  instance. Stored in `pack/context/fixtures.json` (91 entries across 5
+  scenarios).
+- **Verified fact**: a behavioral claim traceable to a fixture. Source of truth
+  is `pack/context/03-json-server-verified-facts.md`.
+- **Engine**: (Phase 2) a pure TypeScript module that simulates json-server
+  query behavior, proven against all 91 fixtures.
+
+### Content rules
+
+- Never alter a verified claim. Every json-server behavioral statement must
+  trace to a fixture ID.
+- The `_limit`, `_start`, and `_end` parameters return `[]` in beta.15 — never
+  claim they work.
+- POST ignores an `id` in the request body — never claim you can set your own.
+- Equality filters are case-sensitive; `title:contains` is case-insensitive.
+- Foreign-key filters (`?projectId=2`) return `[]` for string-typed FKs.
+- `_per_page` without `_page` is silently ignored.
+- Deleting a parent does not cascade to children.
+
+### File ownership
+
+- User-owned (safe to edit): `src/content/**`, `docs.json`,
+  `src/data/site.ts`, `src/mdx/custom-components.tsx`, `public/**`,
+  `README.md`, `AGENTS.md`, `LICENSE`.
+- Framework-owned (never edit): `src/app/**`, `src/components/**`,
+  `src/config/**`, `src/lib/**`, `src/styles/**`, `starter-release.json`,
+  framework scripts in `scripts/`.
+- Custom scripts use the `fg-` prefix (e.g. `scripts/fg-record-fixtures.mjs`).
+- Custom component styling uses `.fg-*` CSS classes in `src/mdx/fg/fg.css`.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
