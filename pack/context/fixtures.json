@@ -1,0 +1,2298 @@
+{
+  "jsonServerVersion": "1.0.0-beta.15",
+  "node": "v22.23.4",
+  "recordedAt": "2026-10-31T02:46:22.227Z",
+  "datasets": {
+    "quickstart": {
+      "posts": [
+        {
+          "id": "1",
+          "title": "Hello JSON Server",
+          "views": 100,
+          "authorId": "1"
+        },
+        {
+          "id": "2",
+          "title": "Filtering and sorting",
+          "views": 250,
+          "authorId": "1"
+        },
+        {
+          "id": "3",
+          "title": "Pagination basics",
+          "views": 40,
+          "authorId": "2"
+        }
+      ],
+      "authors": [
+        {
+          "id": "1",
+          "name": "Ada"
+        },
+        {
+          "id": "2",
+          "name": "Linus"
+        }
+      ],
+      "profile": {
+        "name": "demo"
+      }
+    },
+    "tasks": {
+      "projects": [
+        {
+          "id": "1",
+          "name": "Website relaunch"
+        },
+        {
+          "id": "2",
+          "name": "Mobile app"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "1",
+          "title": "Draft homepage copy",
+          "status": "open",
+          "priority": 2,
+          "projectId": "1"
+        },
+        {
+          "id": "2",
+          "title": "Design navigation",
+          "status": "done",
+          "priority": 3,
+          "projectId": "1"
+        },
+        {
+          "id": "3",
+          "title": "Set up CI",
+          "status": "open",
+          "priority": 3,
+          "projectId": "2"
+        },
+        {
+          "id": "4",
+          "title": "Write release notes",
+          "status": "open",
+          "priority": 1,
+          "projectId": "2"
+        },
+        {
+          "id": "5",
+          "title": "Fix login bug",
+          "status": "blocked",
+          "priority": 3,
+          "projectId": "2"
+        }
+      ]
+    }
+  },
+  "scenarios": [
+    {
+      "id": "quickstart-reads",
+      "dataset": "quickstart",
+      "steps": [
+        {
+          "method": "GET",
+          "path": "/posts",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Hello JSON Server",
+              "views": 100,
+              "authorId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Filtering and sorting",
+              "views": 250,
+              "authorId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Pagination basics",
+              "views": 40,
+              "authorId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/posts/1",
+          "status": 200,
+          "body": {
+            "id": "1",
+            "title": "Hello JSON Server",
+            "views": 100,
+            "authorId": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/posts/999",
+          "status": 404,
+          "body": {
+            "error": "Not Found"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/authors",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Ada"
+            },
+            {
+              "id": "2",
+              "name": "Linus"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/authors/2",
+          "status": 200,
+          "body": {
+            "id": "2",
+            "name": "Linus"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/profile",
+          "status": 200,
+          "body": {
+            "name": "demo"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/posts?views:gt=100",
+          "status": 200,
+          "body": [
+            {
+              "id": "2",
+              "title": "Filtering and sorting",
+              "views": 250,
+              "authorId": "1"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/posts?_sort=-views",
+          "status": 200,
+          "body": [
+            {
+              "id": "2",
+              "title": "Filtering and sorting",
+              "views": 250,
+              "authorId": "1"
+            },
+            {
+              "id": "1",
+              "title": "Hello JSON Server",
+              "views": 100,
+              "authorId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Pagination basics",
+              "views": 40,
+              "authorId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/posts?_sort=views",
+          "status": 200,
+          "body": [
+            {
+              "id": "3",
+              "title": "Pagination basics",
+              "views": 40,
+              "authorId": "2"
+            },
+            {
+              "id": "1",
+              "title": "Hello JSON Server",
+              "views": 100,
+              "authorId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Filtering and sorting",
+              "views": 250,
+              "authorId": "1"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/posts?_page=1&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": null,
+            "next": 2,
+            "last": 2,
+            "pages": 2,
+            "items": 3,
+            "data": [
+              {
+                "id": "1",
+                "title": "Hello JSON Server",
+                "views": 100,
+                "authorId": "1"
+              },
+              {
+                "id": "2",
+                "title": "Filtering and sorting",
+                "views": 250,
+                "authorId": "1"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/posts/1?_embed=author",
+          "status": 200,
+          "body": {
+            "id": "1",
+            "title": "Hello JSON Server",
+            "views": 100,
+            "authorId": "1",
+            "author": {
+              "id": "1",
+              "name": "Ada"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/authors/1?_embed=posts",
+          "status": 200,
+          "body": {
+            "id": "1",
+            "name": "Ada",
+            "posts": [
+              {
+                "id": "1",
+                "title": "Hello JSON Server",
+                "views": 100,
+                "authorId": "1"
+              },
+              {
+                "id": "2",
+                "title": "Filtering and sorting",
+                "views": 250,
+                "authorId": "1"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/posts?title=Hello%20JSON%20Server",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Hello JSON Server",
+              "views": 100,
+              "authorId": "1"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/nope",
+          "status": 404,
+          "body": {
+            "error": "Not Found"
+          }
+        }
+      ],
+      "dbFileAfter": {
+        "posts": [
+          {
+            "id": "1",
+            "title": "Hello JSON Server",
+            "views": 100,
+            "authorId": "1"
+          },
+          {
+            "id": "2",
+            "title": "Filtering and sorting",
+            "views": 250,
+            "authorId": "1"
+          },
+          {
+            "id": "3",
+            "title": "Pagination basics",
+            "views": 40,
+            "authorId": "2"
+          }
+        ],
+        "authors": [
+          {
+            "id": "1",
+            "name": "Ada"
+          },
+          {
+            "id": "2",
+            "name": "Linus"
+          }
+        ],
+        "profile": {
+          "name": "demo"
+        }
+      }
+    },
+    {
+      "id": "quickstart-write",
+      "dataset": "quickstart",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/posts",
+          "requestBody": {
+            "title": "My first post",
+            "views": 0,
+            "authorId": "2"
+          },
+          "status": 201,
+          "body": {
+            "title": "My first post",
+            "views": 0,
+            "authorId": "2",
+            "id": "<generated>"
+          },
+          "generatedId": true,
+          "generatedIdPattern": "^[A-Za-z0-9_-]{6,}$",
+          "generatedIdSample": "W9ZVJeHocW0"
+        },
+        {
+          "method": "PATCH",
+          "path": "/posts/1",
+          "requestBody": {
+            "views": 101
+          },
+          "status": 200,
+          "body": {
+            "id": "1",
+            "title": "Hello JSON Server",
+            "views": 101,
+            "authorId": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/posts",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Hello JSON Server",
+              "views": 100,
+              "authorId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Filtering and sorting",
+              "views": 250,
+              "authorId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Pagination basics",
+              "views": 40,
+              "authorId": "2"
+            },
+            {
+              "title": "My first post",
+              "views": 0,
+              "authorId": "2",
+              "id": "W9ZVJeHocW0"
+            }
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/posts/3",
+          "status": 200,
+          "body": {
+            "id": "3",
+            "title": "Pagination basics",
+            "views": 40,
+            "authorId": "2"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/posts/3",
+          "status": 404,
+          "body": {
+            "error": "Not Found"
+          }
+        },
+        {
+          "method": "PUT",
+          "path": "/posts/2",
+          "requestBody": {
+            "title": "Replaced",
+            "views": 1,
+            "authorId": "1"
+          },
+          "status": 200,
+          "body": {
+            "title": "Replaced",
+            "views": 1,
+            "authorId": "1",
+            "id": "2"
+          }
+        },
+        {
+          "method": "PATCH",
+          "path": "/profile",
+          "requestBody": {
+            "name": "renamed"
+          },
+          "status": 200,
+          "body": {
+            "name": "renamed"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/profile",
+          "status": 200,
+          "body": {
+            "name": "renamed"
+          }
+        },
+        {
+          "method": "PATCH",
+          "path": "/posts/999",
+          "requestBody": {
+            "views": 1
+          },
+          "status": 404,
+          "body": {
+            "error": "Not Found"
+          }
+        },
+        {
+          "method": "DELETE",
+          "path": "/posts/999",
+          "status": 404,
+          "body": {
+            "error": "Not Found"
+          }
+        }
+      ],
+      "dbFileAfter": {
+        "posts": [
+          {
+            "id": "1",
+            "title": "Hello JSON Server",
+            "views": 100,
+            "authorId": "1"
+          },
+          {
+            "title": "Replaced",
+            "views": 1,
+            "authorId": "1",
+            "id": "2"
+          },
+          {
+            "title": "My first post",
+            "views": 0,
+            "authorId": "2",
+            "id": "<generated>"
+          }
+        ],
+        "authors": [
+          {
+            "id": "1",
+            "name": "Ada"
+          },
+          {
+            "id": "2",
+            "name": "Linus"
+          }
+        ],
+        "profile": {
+          "name": "renamed"
+        },
+        "$schema": "./node_modules/json-server/schema.json"
+      }
+    },
+    {
+      "id": "tasks-filter-sort",
+      "dataset": "tasks",
+      "steps": [
+        {
+          "method": "GET",
+          "path": "/tasks",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks/3",
+          "status": 200,
+          "body": {
+            "id": "3",
+            "title": "Set up CI",
+            "status": "open",
+            "priority": 3,
+            "projectId": "2"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks/999",
+          "status": 404,
+          "body": {
+            "error": "Not Found"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/projects",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Website relaunch"
+            },
+            {
+              "id": "2",
+              "name": "Mobile app"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/projects/1",
+          "status": 200,
+          "body": {
+            "id": "1",
+            "name": "Website relaunch"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?status=open",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?status=open&priority:gte=2",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?status:ne=done",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?priority:gt=1",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?priority:lt=3",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?priority:lte=2",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?priority:eq=3",
+          "status": 200,
+          "body": [
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?status:in=open,blocked",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?title:contains=release",
+          "status": 200,
+          "body": [
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?title:startsWith=Set",
+          "status": 200,
+          "body": [
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?status=open&status=blocked",
+          "status": 200,
+          "body": [
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_sort=-priority,title",
+          "status": 200,
+          "body": [
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_sort=priority",
+          "status": 200,
+          "body": [
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_sort=-title",
+          "status": 200,
+          "body": [
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?priority=3",
+          "status": 200,
+          "body": [
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId=2",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId=1",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId:ne=1",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId:gte=2",
+          "status": 200,
+          "body": [
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectid=2",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId:contains=2",
+          "status": 200,
+          "body": [
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId:startsWith=2",
+          "status": 200,
+          "body": [
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId:endsWith=2",
+          "status": 200,
+          "body": [
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId:in=2",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId:eq=2",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?status=OPEN",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?title:contains=Release",
+          "status": 200,
+          "body": [
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?priority:gte=2&priority:lte=2",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_sort=status,-priority",
+          "status": 200,
+          "body": [
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_sort=-id",
+          "status": 200,
+          "body": [
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            }
+          ]
+        }
+      ],
+      "dbFileAfter": {
+        "projects": [
+          {
+            "id": "1",
+            "name": "Website relaunch"
+          },
+          {
+            "id": "2",
+            "name": "Mobile app"
+          }
+        ],
+        "tasks": [
+          {
+            "id": "1",
+            "title": "Draft homepage copy",
+            "status": "open",
+            "priority": 2,
+            "projectId": "1"
+          },
+          {
+            "id": "2",
+            "title": "Design navigation",
+            "status": "done",
+            "priority": 3,
+            "projectId": "1"
+          },
+          {
+            "id": "3",
+            "title": "Set up CI",
+            "status": "open",
+            "priority": 3,
+            "projectId": "2"
+          },
+          {
+            "id": "4",
+            "title": "Write release notes",
+            "status": "open",
+            "priority": 1,
+            "projectId": "2"
+          },
+          {
+            "id": "5",
+            "title": "Fix login bug",
+            "status": "blocked",
+            "priority": 3,
+            "projectId": "2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "tasks-paginate-embed",
+      "dataset": "tasks",
+      "steps": [
+        {
+          "method": "GET",
+          "path": "/tasks?_page=1&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": null,
+            "next": 2,
+            "last": 3,
+            "pages": 3,
+            "items": 5,
+            "data": [
+              {
+                "id": "1",
+                "title": "Draft homepage copy",
+                "status": "open",
+                "priority": 2,
+                "projectId": "1"
+              },
+              {
+                "id": "2",
+                "title": "Design navigation",
+                "status": "done",
+                "priority": 3,
+                "projectId": "1"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_page=2&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": 1,
+            "next": 3,
+            "last": 3,
+            "pages": 3,
+            "items": 5,
+            "data": [
+              {
+                "id": "3",
+                "title": "Set up CI",
+                "status": "open",
+                "priority": 3,
+                "projectId": "2"
+              },
+              {
+                "id": "4",
+                "title": "Write release notes",
+                "status": "open",
+                "priority": 1,
+                "projectId": "2"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_page=3&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": 2,
+            "next": null,
+            "last": 3,
+            "pages": 3,
+            "items": 5,
+            "data": [
+              {
+                "id": "5",
+                "title": "Fix login bug",
+                "status": "blocked",
+                "priority": 3,
+                "projectId": "2"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_page=9&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": 2,
+            "next": null,
+            "last": 3,
+            "pages": 3,
+            "items": 5,
+            "data": [
+              {
+                "id": "5",
+                "title": "Fix login bug",
+                "status": "blocked",
+                "priority": 3,
+                "projectId": "2"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_per_page=1",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_page=1",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": null,
+            "next": null,
+            "last": 1,
+            "pages": 1,
+            "items": 5,
+            "data": [
+              {
+                "id": "1",
+                "title": "Draft homepage copy",
+                "status": "open",
+                "priority": 2,
+                "projectId": "1"
+              },
+              {
+                "id": "2",
+                "title": "Design navigation",
+                "status": "done",
+                "priority": 3,
+                "projectId": "1"
+              },
+              {
+                "id": "3",
+                "title": "Set up CI",
+                "status": "open",
+                "priority": 3,
+                "projectId": "2"
+              },
+              {
+                "id": "4",
+                "title": "Write release notes",
+                "status": "open",
+                "priority": 1,
+                "projectId": "2"
+              },
+              {
+                "id": "5",
+                "title": "Fix login bug",
+                "status": "blocked",
+                "priority": 3,
+                "projectId": "2"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?status=open&_page=1&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": null,
+            "next": 2,
+            "last": 2,
+            "pages": 2,
+            "items": 3,
+            "data": [
+              {
+                "id": "1",
+                "title": "Draft homepage copy",
+                "status": "open",
+                "priority": 2,
+                "projectId": "1"
+              },
+              {
+                "id": "3",
+                "title": "Set up CI",
+                "status": "open",
+                "priority": 3,
+                "projectId": "2"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?status=open&_sort=-priority&_page=1&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": null,
+            "next": 2,
+            "last": 2,
+            "pages": 2,
+            "items": 3,
+            "data": [
+              {
+                "id": "3",
+                "title": "Set up CI",
+                "status": "open",
+                "priority": 3,
+                "projectId": "2"
+              },
+              {
+                "id": "1",
+                "title": "Draft homepage copy",
+                "status": "open",
+                "priority": 2,
+                "projectId": "1"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_sort=-priority&_page=1&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": null,
+            "next": 2,
+            "last": 3,
+            "pages": 3,
+            "items": 5,
+            "data": [
+              {
+                "id": "2",
+                "title": "Design navigation",
+                "status": "done",
+                "priority": 3,
+                "projectId": "1"
+              },
+              {
+                "id": "3",
+                "title": "Set up CI",
+                "status": "open",
+                "priority": 3,
+                "projectId": "2"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_limit=1",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_start=0&_end=1",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_start=1&_limit=2",
+          "status": 200,
+          "body": []
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_page=0&_per_page=2",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": null,
+            "next": 2,
+            "last": 3,
+            "pages": 3,
+            "items": 5,
+            "data": [
+              {
+                "id": "1",
+                "title": "Draft homepage copy",
+                "status": "open",
+                "priority": 2,
+                "projectId": "1"
+              },
+              {
+                "id": "2",
+                "title": "Design navigation",
+                "status": "done",
+                "priority": 3,
+                "projectId": "1"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_page=1&_per_page=0",
+          "status": 200,
+          "body": {
+            "first": 1,
+            "prev": null,
+            "next": 2,
+            "last": 5,
+            "pages": 5,
+            "items": 5,
+            "data": [
+              {
+                "id": "1",
+                "title": "Draft homepage copy",
+                "status": "open",
+                "priority": 2,
+                "projectId": "1"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_page=abc",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1"
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1"
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2"
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks/3?_embed=project",
+          "status": 200,
+          "body": {
+            "id": "3",
+            "title": "Set up CI",
+            "status": "open",
+            "priority": 3,
+            "projectId": "2",
+            "project": {
+              "id": "2",
+              "name": "Mobile app"
+            }
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/projects/2?_embed=tasks",
+          "status": 200,
+          "body": {
+            "id": "2",
+            "name": "Mobile app",
+            "tasks": [
+              {
+                "id": "3",
+                "title": "Set up CI",
+                "status": "open",
+                "priority": 3,
+                "projectId": "2"
+              },
+              {
+                "id": "4",
+                "title": "Write release notes",
+                "status": "open",
+                "priority": 1,
+                "projectId": "2"
+              },
+              {
+                "id": "5",
+                "title": "Fix login bug",
+                "status": "blocked",
+                "priority": 3,
+                "projectId": "2"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/projects/1?_embed=tasks",
+          "status": 200,
+          "body": {
+            "id": "1",
+            "name": "Website relaunch",
+            "tasks": [
+              {
+                "id": "1",
+                "title": "Draft homepage copy",
+                "status": "open",
+                "priority": 2,
+                "projectId": "1"
+              },
+              {
+                "id": "2",
+                "title": "Design navigation",
+                "status": "done",
+                "priority": 3,
+                "projectId": "1"
+              }
+            ]
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?_embed=project",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "open",
+              "priority": 2,
+              "projectId": "1",
+              "project": {
+                "id": "1",
+                "name": "Website relaunch"
+              }
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": "1",
+              "project": {
+                "id": "1",
+                "name": "Website relaunch"
+              }
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2",
+              "project": {
+                "id": "2",
+                "name": "Mobile app"
+              }
+            },
+            {
+              "id": "4",
+              "title": "Write release notes",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2",
+              "project": {
+                "id": "2",
+                "name": "Mobile app"
+              }
+            },
+            {
+              "id": "5",
+              "title": "Fix login bug",
+              "status": "blocked",
+              "priority": 3,
+              "projectId": "2",
+              "project": {
+                "id": "2",
+                "name": "Mobile app"
+              }
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/projects?_embed=tasks",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "name": "Website relaunch",
+              "tasks": [
+                {
+                  "id": "1",
+                  "title": "Draft homepage copy",
+                  "status": "open",
+                  "priority": 2,
+                  "projectId": "1"
+                },
+                {
+                  "id": "2",
+                  "title": "Design navigation",
+                  "status": "done",
+                  "priority": 3,
+                  "projectId": "1"
+                }
+              ]
+            },
+            {
+              "id": "2",
+              "name": "Mobile app",
+              "tasks": [
+                {
+                  "id": "3",
+                  "title": "Set up CI",
+                  "status": "open",
+                  "priority": 3,
+                  "projectId": "2"
+                },
+                {
+                  "id": "4",
+                  "title": "Write release notes",
+                  "status": "open",
+                  "priority": 1,
+                  "projectId": "2"
+                },
+                {
+                  "id": "5",
+                  "title": "Fix login bug",
+                  "status": "blocked",
+                  "priority": 3,
+                  "projectId": "2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/tasks/3?_embed=nothing",
+          "status": 200,
+          "body": {
+            "id": "3",
+            "title": "Set up CI",
+            "status": "open",
+            "priority": 3,
+            "projectId": "2"
+          }
+        }
+      ],
+      "dbFileAfter": {
+        "projects": [
+          {
+            "id": "1",
+            "name": "Website relaunch"
+          },
+          {
+            "id": "2",
+            "name": "Mobile app"
+          }
+        ],
+        "tasks": [
+          {
+            "id": "1",
+            "title": "Draft homepage copy",
+            "status": "open",
+            "priority": 2,
+            "projectId": "1"
+          },
+          {
+            "id": "2",
+            "title": "Design navigation",
+            "status": "done",
+            "priority": 3,
+            "projectId": "1"
+          },
+          {
+            "id": "3",
+            "title": "Set up CI",
+            "status": "open",
+            "priority": 3,
+            "projectId": "2"
+          },
+          {
+            "id": "4",
+            "title": "Write release notes",
+            "status": "open",
+            "priority": 1,
+            "projectId": "2"
+          },
+          {
+            "id": "5",
+            "title": "Fix login bug",
+            "status": "blocked",
+            "priority": 3,
+            "projectId": "2"
+          }
+        ]
+      }
+    },
+    {
+      "id": "tasks-write",
+      "dataset": "tasks",
+      "steps": [
+        {
+          "method": "POST",
+          "path": "/tasks",
+          "requestBody": {
+            "title": "Review pull request",
+            "status": "open",
+            "priority": 2,
+            "projectId": "1"
+          },
+          "status": 201,
+          "body": {
+            "title": "Review pull request",
+            "status": "open",
+            "priority": 2,
+            "projectId": "1",
+            "id": "<generated>"
+          },
+          "generatedId": true,
+          "generatedIdPattern": "^[A-Za-z0-9_-]{6,}$",
+          "generatedIdSample": "hyvJG5srZ_g"
+        },
+        {
+          "method": "POST",
+          "path": "/tasks",
+          "requestBody": {
+            "id": "custom-id",
+            "title": "Own id",
+            "status": "open",
+            "priority": 1,
+            "projectId": "1"
+          },
+          "status": 201,
+          "body": {
+            "id": "_df2pOUlJ-0",
+            "title": "Own id",
+            "status": "open",
+            "priority": 1,
+            "projectId": "1"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks/custom-id",
+          "status": 404,
+          "body": {
+            "error": "Not Found"
+          }
+        },
+        {
+          "method": "PATCH",
+          "path": "/tasks/1",
+          "requestBody": {
+            "status": "done"
+          },
+          "status": 200,
+          "body": {
+            "id": "1",
+            "title": "Draft homepage copy",
+            "status": "done",
+            "priority": 2,
+            "projectId": "1"
+          }
+        },
+        {
+          "method": "PUT",
+          "path": "/tasks/4",
+          "requestBody": {
+            "title": "Replaced",
+            "status": "open",
+            "priority": 1,
+            "projectId": "2"
+          },
+          "status": 200,
+          "body": {
+            "title": "Replaced",
+            "status": "open",
+            "priority": 1,
+            "projectId": "2",
+            "id": "4"
+          }
+        },
+        {
+          "method": "DELETE",
+          "path": "/tasks/5",
+          "status": 200,
+          "body": {
+            "id": "5",
+            "title": "Fix login bug",
+            "status": "blocked",
+            "priority": 3,
+            "projectId": "2"
+          }
+        },
+        {
+          "method": "DELETE",
+          "path": "/projects/1",
+          "status": 200,
+          "body": {
+            "id": "1",
+            "name": "Website relaunch"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/tasks",
+          "status": 200,
+          "body": [
+            {
+              "id": "1",
+              "title": "Draft homepage copy",
+              "status": "done",
+              "priority": 2,
+              "projectId": null
+            },
+            {
+              "id": "2",
+              "title": "Design navigation",
+              "status": "done",
+              "priority": 3,
+              "projectId": null
+            },
+            {
+              "id": "3",
+              "title": "Set up CI",
+              "status": "open",
+              "priority": 3,
+              "projectId": "2"
+            },
+            {
+              "title": "Replaced",
+              "status": "open",
+              "priority": 1,
+              "projectId": "2",
+              "id": "4"
+            },
+            {
+              "title": "Review pull request",
+              "status": "open",
+              "priority": 2,
+              "projectId": null,
+              "id": "hyvJG5srZ_g"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/projects",
+          "status": 200,
+          "body": [
+            {
+              "id": "2",
+              "name": "Mobile app"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/tasks",
+          "requestBody": {
+            "title": "Number FK",
+            "status": "open",
+            "priority": 1,
+            "projectId": 2
+          },
+          "status": 201,
+          "body": {
+            "title": "Number FK",
+            "status": "open",
+            "priority": 1,
+            "projectId": 2,
+            "id": "<generated>"
+          },
+          "generatedId": true,
+          "generatedIdPattern": "^[A-Za-z0-9_-]{6,}$",
+          "generatedIdSample": "XBmPMI_g5Dg"
+        },
+        {
+          "method": "GET",
+          "path": "/tasks?projectId=2",
+          "status": 200,
+          "body": [
+            {
+              "title": "Number FK",
+              "status": "open",
+              "priority": 1,
+              "projectId": 2,
+              "id": "XBmPMI_g5Dg"
+            }
+          ]
+        }
+      ],
+      "dbFileAfter": {
+        "projects": [
+          {
+            "id": "2",
+            "name": "Mobile app"
+          }
+        ],
+        "tasks": [
+          {
+            "id": "1",
+            "title": "Draft homepage copy",
+            "status": "done",
+            "priority": 2,
+            "projectId": null
+          },
+          {
+            "id": "2",
+            "title": "Design navigation",
+            "status": "done",
+            "priority": 3,
+            "projectId": null
+          },
+          {
+            "id": "3",
+            "title": "Set up CI",
+            "status": "open",
+            "priority": 3,
+            "projectId": "2"
+          },
+          {
+            "title": "Replaced",
+            "status": "open",
+            "priority": 1,
+            "projectId": "2",
+            "id": "4"
+          },
+          {
+            "title": "Review pull request",
+            "status": "open",
+            "priority": 2,
+            "projectId": null,
+            "id": "<generated>"
+          },
+          {
+            "title": "Number FK",
+            "status": "open",
+            "priority": 1,
+            "projectId": 2,
+            "id": "<generated>"
+          }
+        ],
+        "$schema": "./node_modules/json-server/schema.json"
+      }
+    }
+  ]
+}
