@@ -11,7 +11,7 @@ lastVerified: 2026-10-30
 verifiedVersion: 1.0.0-beta.15
 ---
 
-Every example and behavioral claim in this guide was produced by running a real `json-server@1.0.0-beta.15` server on Node.js 22, issuing HTTP requests, and recording the responses. The recordings are stored in `fixtures.json` and can be replayed to verify the guide stays accurate.
+Every example and behavioral claim in this guide was produced by running a real `json-server@1.0.0-beta.15` server on Node.js 22, issuing HTTP requests, and recording the responses. The recordings are stored in [`src/mdx/fg/fixtures.json`](https://github.com/Ebendttl/json-server-field-guide/blob/main/src/mdx/fg/fixtures.json) and can be replayed to verify the guide stays accurate.
 
 ## Why verify
 
@@ -85,7 +85,7 @@ The table below maps key claims in the guide to the fixture that proves them. Th
 | `/projects/2?_embed=tasks` embeds children | `tasks-paginate-embed[16]` |
 | `?_embed=nothing` is silently ignored | `tasks-paginate-embed[20]` |
 | POST ignores `id` in body, generates its own | `tasks-write[1]`, `tasks-write[2]` |
-| Deleting a parent does not cascade to children | `tasks-write[6]`–`[8]` |
+| Deleting a parent does not delete children; foreign keys referencing the deleted parent are set to null (`projectId: null`) | `tasks-write[6]`–`[8]` |
 | Unknown routes return 404 | `quickstart-reads[13]` |
 
 ## Running the fixtures yourself
@@ -96,7 +96,7 @@ You can re-record the fixtures with the script in this repository:
 node scripts/fg-record-fixtures.mjs
 ```
 
-The script starts json-server, replays every scenario, and compares the recorded responses to `fixtures.json`. Any mismatch means a claim in the guide may need updating.
+The script starts json-server, replays every scenario, and compares the recorded responses to [`src/mdx/fg/fixtures.json`](https://github.com/Ebendttl/json-server-field-guide/blob/main/src/mdx/fg/fixtures.json). Any mismatch means a claim in the guide may need updating.
 
 ## Next steps
 

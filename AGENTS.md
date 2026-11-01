@@ -78,10 +78,10 @@ Ebenezer Akinseinde Akindele.
 ### Terminology
 
 - **Fixture**: a recorded HTTP request/response pair from a real json-server
-  instance. Stored in `pack/context/fixtures.json` (91 entries across 5
+  instance. Stored in `src/mdx/fg/fixtures.json` (91 entries across 5
   scenarios).
 - **Verified fact**: a behavioral claim traceable to a fixture. Source of truth
-  is `pack/context/03-json-server-verified-facts.md`.
+  is the recorded fixtures in `src/mdx/fg/fixtures.json`.
 - **Engine**: (Phase 2) a pure TypeScript module that simulates json-server
   query behavior, proven against all 91 fixtures.
 

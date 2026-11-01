@@ -36,13 +36,13 @@ requirement). The site starts at [http://localhost:3040](http://localhost:3040).
 | `src/content/` | MDX documentation pages |
 | `src/data/site.ts` | Site name, links, and brand presets |
 | `docs.json` | Navigation, theme, and feature configuration |
-| `pack/context/fixtures.json` | 91 recorded HTTP request/response pairs |
+| [`src/mdx/fg/fixtures.json`](https://github.com/Ebendttl/json-server-field-guide/blob/main/src/mdx/fg/fixtures.json) | 91 recorded HTTP request/response pairs |
 | `notes/` | Internal notes (plan, friction log, checklists) |
 
 ## Verification
 
 Every behavioral claim in the guide traces to a specific fixture ID in
-`pack/context/fixtures.json`. See the
+[`src/mdx/fg/fixtures.json`](https://github.com/Ebendttl/json-server-field-guide/blob/main/src/mdx/fg/fixtures.json). See the
 [Verification page](/verification) for the full claim-to-fixture map.
 
 Re-record the fixtures yourself:
