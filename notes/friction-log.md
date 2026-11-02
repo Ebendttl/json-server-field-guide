@@ -54,3 +54,16 @@ Real obstacles encountered while using the Thally platform.
 - **`notes/` and `scripts/` are not explicitly user-owned.** Neither appears in
   `userOwnedNeverOverwrite`. `scripts/` has framework-owned files. `notes/` is
   new and unmanaged — safe to use. For `scripts/`, we use `fg-` prefixed names.
+
+## 2026-10-31 — Phase 1: Content and verification
+
+- **`404.mdx` orphan warning in `thally check`.** Creating `src/content/404.mdx`
+  triggered an orphan warning because it was not listed in `docs.json` nav.
+  Resolved by adding `hidden: true` to frontmatter per CLI logic.
+
+## 2026-10-31 — Phase 2: Engine and verification tooling
+
+- **`package.json` requires manual review during framework updates.**
+  `package.json` is neither in `userOwnedNeverOverwrite` nor `frameworkSyncEligible`.
+  Adding project scripts (`test:engine`, `verify:fixtures`) requires manual review
+  and conflict resolution whenever running `npm run starter:update`.
