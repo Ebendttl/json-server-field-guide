@@ -28,7 +28,9 @@
     "typecheck": "tsc --noEmit",
     "setup:cloudflare": "npm install --save-dev --save-exact @opennextjs/cloudflare@1.20.12 wrangler@4.148.0",
     "check": "npx --yes --package=@thallylabs/cli@latest thally check",
-    "starter:update": "npx --yes --package=@thallylabs/cli@latest thally starter update"
+    "starter:update": "npx --yes --package=@thallylabs/cli@latest thally starter update",
+    "test:engine": "tsx --test src/mdx/fg/engine.test.ts",
+    "verify:fixtures": "node scripts/fg-record-fixtures.mjs --out src/mdx/fg/fixtures.json"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

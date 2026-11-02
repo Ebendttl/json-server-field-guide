@@ -2,11 +2,13 @@
 /**
  * Records GROUND-TRUTH responses from the real json-server@1.0.0-beta.15.
  *
- *   node scripts/record-fixtures.mjs            -> writes src/mdx/fg/fixtures.json
- *   node scripts/record-fixtures.mjs --out x.json
+ *   node scripts/fg-record-fixtures.mjs            -> writes src/mdx/fg/fixtures.json
+ *   node scripts/fg-record-fixtures.mjs --out x.json
  *
  * Requires Node >= 22.12 and network access to install json-server into a temp dir.
- * Nothing here is guessed: every status code and body is what the real server returned.
+ * Each scenario is recorded 3 times in fresh temporary directories with a 250 ms wait
+ * after every write before the next request. A step is verified only if all 3 runs
+ * yield identical status and body. Any step that varies across runs is marked unstable: true.
  */
 import { spawn, execFileSync } from 'node:child_process'
 import { mkdtempSync, writeFileSync, readFileSync, mkdirSync } from 'node:fs'
@@ -14,6 +16,9 @@ import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 
 const VERSION = '1.0.0-beta.15'
+const RUNS_COUNT = 3
+const WRITE_DELAY_MS = 250
+
 const out = process.argv.includes('--out')
   ? process.argv[process.argv.indexOf('--out') + 1]
   : 'src/mdx/fg/fixtures.json'
@@ -49,7 +54,6 @@ const DATASETS = {
 const J = { 'Content-Type': 'application/json' }
 const reads = (paths) => paths.map((path) => ({ method: 'GET', path }))
 
-// Each scenario runs against a FRESH server + fresh copy of the dataset.
 const SCENARIOS = [
   {
     id: 'quickstart-reads', dataset: 'quickstart',
@@ -137,49 +141,152 @@ async function waitUp(base) {
   throw new Error('json-server did not start at ' + base)
 }
 
-let port = 3300
-const result = { jsonServerVersion: VERSION, node: process.version, recordedAt: new Date().toISOString(), datasets: DATASETS, scenarios: [] }
+function normalizeGeneratedIds(obj, generatedIds) {
+  if (!obj) return obj
+  let str = JSON.stringify(obj)
+  for (const id of generatedIds) {
+    if (id) {
+      str = str.split(`"${id}"`).join('"<generated>"')
+    }
+  }
+  return JSON.parse(str)
+}
+
+let port = 3400
+const result = {
+  jsonServerVersion: VERSION,
+  node: process.version,
+  recordedAt: new Date().toISOString(),
+  stabilityCheck: {
+    runsPerScenario: RUNS_COUNT,
+    writeDelayMs: WRITE_DELAY_MS,
+  },
+  datasets: DATASETS,
+  scenarios: [],
+}
+
+let totalVerifiedSteps = 0
+let totalUnstableSteps = 0
 
 for (const sc of SCENARIOS) {
-  const dbFile = join(work, `${sc.id}.json`)
-  writeFileSync(dbFile, JSON.stringify(DATASETS[sc.dataset], null, 2))
-  const p = port++
-  const base = `http://localhost:${p}`
-  const child = spawn(bin, [dbFile, '-p', String(p)], { stdio: 'ignore' })
-  const record = { id: sc.id, dataset: sc.dataset, steps: [] }
-  try {
-    await waitUp(base)
-    for (const st of sc.steps) {
-      const res = await fetch(base + st.path, { method: st.method, headers: st.body ? J : undefined, body: st.body ? JSON.stringify(st.body) : undefined })
-      const text = await res.text()
-      let body = text
-      try { body = text ? JSON.parse(text) : null } catch { /* keep text */ }
-      const step = { method: st.method, path: st.path, ...(st.body ? { requestBody: st.body } : {}), status: res.status, body }
-      if (st.method === 'POST' && body && typeof body === 'object' && 'id' in body && !('id' in st.body)) {
-        step.generatedId = true
-        step.generatedIdPattern = '^[A-Za-z0-9_-]{6,}$'
-        step.generatedIdSample = body.id
-        step.body = { ...body, id: '<generated>' }
+  console.log(`Recording scenario: ${sc.id} (${RUNS_COUNT} runs) ...`)
+  const scenarioRuns = []
+
+  for (let runIdx = 0; runIdx < RUNS_COUNT; runIdx++) {
+    const runDir = mkdtempSync(join(tmpdir(), `jsfg-${sc.id}-run${runIdx}-`))
+    const dbFile = join(runDir, 'db.json')
+    writeFileSync(dbFile, JSON.stringify(DATASETS[sc.dataset], null, 2))
+
+    const p = port++
+    const base = `http://localhost:${p}`
+    const child = spawn(bin, [dbFile, '-p', String(p)], { stdio: 'ignore' })
+    const runRecord = { steps: [], generatedIds: [], dbFileAfter: null }
+
+    try {
+      await waitUp(base)
+      for (const st of sc.steps) {
+        const isWrite = st.method !== 'GET'
+        const res = await fetch(base + st.path, {
+          method: st.method,
+          headers: st.body ? J : undefined,
+          body: st.body ? JSON.stringify(st.body) : undefined,
+        })
+        const text = await res.text()
+        let body = text
+        try { body = text ? JSON.parse(text) : null } catch { /* keep text */ }
+
+        let sampleId = null
+        if (st.method === 'POST' && body && typeof body === 'object' && 'id' in body) {
+          sampleId = body.id
+          runRecord.generatedIds.push(sampleId)
+        }
+
+        runRecord.steps.push({
+          status: res.status,
+          rawBody: body,
+          sampleId,
+        })
+
+        if (isWrite) {
+          await sleep(WRITE_DELAY_MS)
+        }
       }
-      record.steps.push(step)
+
+      await sleep(WRITE_DELAY_MS) // wait for final flush
+      runRecord.dbFileAfter = JSON.parse(readFileSync(dbFile, 'utf8'))
+    } finally {
+      child.kill('SIGTERM')
+      await sleep(150)
     }
-    await sleep(250) // let the server flush db file
-    record.dbFileAfter = JSON.parse(readFileSync(dbFile, 'utf8'))
-    if (JSON.stringify(record.dbFileAfter).includes('"id"')) {
-      // normalise generated ids in the persisted file too
-      const gen = record.steps.filter((s) => s.generatedId).map((s) => s.generatedIdSample)
-      let s = JSON.stringify(record.dbFileAfter)
-      for (const g of gen) s = s.split(`"${g}"`).join('"<generated>"')
-      record.dbFileAfter = JSON.parse(s)
-    }
-  } finally {
-    child.kill('SIGTERM')
-    await sleep(150)
+
+    scenarioRuns.push(runRecord)
   }
-  result.scenarios.push(record)
-  console.log(`  recorded ${sc.id}: ${record.steps.length} requests`)
+
+  // Cross-run stability comparison
+  const consolidatedSteps = []
+  for (let stepIdx = 0; stepIdx < sc.steps.length; stepIdx++) {
+    const st = sc.steps[stepIdx]
+    const run0 = scenarioRuns[0].steps[stepIdx]
+    const run1 = scenarioRuns[1].steps[stepIdx]
+    const run2 = scenarioRuns[2].steps[stepIdx]
+
+    const statusMatch = run0.status === run1.status && run1.status === run2.status
+
+    const normBody0 = normalizeGeneratedIds(run0.rawBody, scenarioRuns[0].generatedIds)
+    const normBody1 = normalizeGeneratedIds(run1.rawBody, scenarioRuns[1].generatedIds)
+    const normBody2 = normalizeGeneratedIds(run2.rawBody, scenarioRuns[2].generatedIds)
+
+    const str0 = JSON.stringify(normBody0)
+    const str1 = JSON.stringify(normBody1)
+    const str2 = JSON.stringify(normBody2)
+    const bodyMatch = str0 === str1 && str1 === str2
+
+    const isStable = statusMatch && bodyMatch
+
+    const stepOut = {
+      method: st.method,
+      path: st.path,
+      ...(st.body ? { requestBody: st.body } : {}),
+      status: run0.status,
+      body: normBody0,
+    }
+
+    if (st.method === 'POST' && run0.rawBody && typeof run0.rawBody === 'object' && 'id' in run0.rawBody) {
+      stepOut.generatedId = true
+      stepOut.generatedIdPattern = '^[A-Za-z0-9_-]{6,}$'
+      stepOut.generatedIdSample = run0.sampleId
+    }
+
+    if (!isStable) {
+      stepOut.unstable = true
+      totalUnstableSteps++
+      console.warn(`  [UNSTABLE] ${sc.id}[${stepIdx}]: statusMatch=${statusMatch}, bodyMatch=${bodyMatch}`)
+    } else {
+      totalVerifiedSteps++
+    }
+
+    consolidatedSteps.push(stepOut)
+  }
+
+  // Normalize dbFileAfter
+  const normDb0 = normalizeGeneratedIds(scenarioRuns[0].dbFileAfter, scenarioRuns[0].generatedIds)
+  const normDb1 = normalizeGeneratedIds(scenarioRuns[1].dbFileAfter, scenarioRuns[1].generatedIds)
+  const normDb2 = normalizeGeneratedIds(scenarioRuns[2].dbFileAfter, scenarioRuns[2].generatedIds)
+  if (JSON.stringify(normDb0) !== JSON.stringify(normDb1) || JSON.stringify(normDb1) !== JSON.stringify(normDb2)) {
+    console.warn(`  [UNSTABLE DB] ${sc.id} dbFileAfter differed across runs`)
+  }
+
+  result.scenarios.push({
+    id: sc.id,
+    dataset: sc.dataset,
+    steps: consolidatedSteps,
+    dbFileAfter: normDb0,
+  })
+
+  console.log(`  completed ${sc.id}: ${consolidatedSteps.length} steps (stable: ${consolidatedSteps.filter(s => !s.unstable).length})`)
 }
 
 mkdirSync(dirname(out), { recursive: true })
 writeFileSync(out, JSON.stringify(result, null, 2) + '\n')
-console.log(`Wrote ${out}`)
+console.log(`\nWrote ${out}`)
+console.log(`Summary: ${totalVerifiedSteps} verified stable steps, ${totalUnstableSteps} unstable steps.`)
