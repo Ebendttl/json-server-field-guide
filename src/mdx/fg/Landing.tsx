@@ -1,15 +1,12 @@
 import Link from 'next/link';
-import { INITIAL_DATASETS, RECORDED_PRESETS } from './recorded';
+import { Console } from './Console';
 import './fg.css';
 
 /**
  * Landing page component (Server Component) for JSON Server Field Guide.
- * Implements the "product-performs" direction with static, verified fixture previews.
+ * Implements the "product-performs" direction with live interactive console.
  */
 export function Landing() {
-  const quickstartSeed = INITIAL_DATASETS.quickstart;
-  const postsPreset = RECORDED_PRESETS[0]; // GET /posts -> 200
-
   return (
     <div className="fg-root">
       {/* 1. Hero Section */}
@@ -17,8 +14,7 @@ export function Landing() {
         <div className="fg-hero-content">
           <h1 className="fg-headline">Your JSON file is already an API.</h1>
           <p className="fg-subhead">
-            One file, zero boilerplate. The unofficial, fixture-verified guide for
-            json-server@1.0.0-beta.15.
+            91 requests recorded from json-server@1.0.0-beta.15, replayed against this engine.
           </p>
           <div className="fg-hero-actions">
             <Link href="/quickstart" className="fg-btn-primary">
@@ -31,50 +27,16 @@ export function Landing() {
           <div className="fg-works-with">
             <span className="fg-works-with-label">Works with standard REST clients:</span>
             <span className="fg-works-with-item">curl</span>
-            <span>·</span>
             <span className="fg-works-with-item">fetch</span>
-            <span>·</span>
             <span className="fg-works-with-item">Postman</span>
-            <span>·</span>
             <span className="fg-works-with-item">Bruno</span>
-            <span>·</span>
             <span className="fg-works-with-item">React Query</span>
-            <span>·</span>
             <span className="fg-works-with-item">Axios</span>
           </div>
         </div>
 
-        {/* Static Console Preview (data-ui fragment; no-JS fallback) */}
-        <div className="fg-preview-panel" data-ui>
-          <div className="fg-preview-pane">
-            <div className="fg-pane-header">
-              <div className="fg-pane-title">
-                <span className="fg-dot" />
-                <span>db.json (Seed Data)</span>
-              </div>
-              <span className="fg-badge-recorded">3 resources</span>
-            </div>
-            <pre className="fg-code-content">
-              <code>{JSON.stringify(quickstartSeed, null, 2)}</code>
-            </pre>
-          </div>
-
-          <div className="fg-preview-pane fg-preview-pane-divider">
-            <div className="fg-pane-header">
-              <div className="fg-pane-title">
-                <span className="fg-badge-method">{postsPreset.method}</span>
-                <code>{postsPreset.path}</code>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span className="fg-badge-status">{postsPreset.status} OK</span>
-                <span className="fg-badge-recorded">recorded fixture</span>
-              </div>
-            </div>
-            <pre className="fg-code-content">
-              <code>{JSON.stringify(postsPreset.responseBody, null, 2)}</code>
-            </pre>
-          </div>
-        </div>
+        {/* Live Interactive Console with SSR fallback */}
+        <Console />
       </section>
 
       {/* 2. How the file becomes the API */}
