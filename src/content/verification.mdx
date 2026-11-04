@@ -24,7 +24,7 @@ JSON Server 1.x is a beta. Its query-parameter behavior differs from the widely 
 3. It records each response's status code and body.
 4. It snapshots `db.json` after each scenario to confirm writes persisted.
 
-Each scenario runs against a clean server. State carries across steps within a scenario but not between scenarios.
+Every scenario is recorded 3 times with a 250 ms pause after every write, and a step is kept only if all runs matched. Each scenario runs against a clean server. State carries across steps within a scenario but not between scenarios.
 
 ## Datasets
 

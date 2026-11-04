@@ -30,7 +30,10 @@ import type { MDXComponents } from 'mdx/types'
  *  props from MDX (`<PricingTable plan="pro" />`). See
  *  `src/components/mdx/rich-content.tsx` for how the built-ins are written.
  */
+import { Landing } from './fg/Landing';
+import { HideShell } from './fg/HideShell';
+
 export const customComponents: MDXComponents = {
-  // Add your components here, e.g.:
-  // Highlight,
+  Landing,
+  HideShell,
 }

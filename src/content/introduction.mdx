@@ -1,6 +1,7 @@
 ---
 title: Introduction
 description: Learn what JSON Server does, who it is for, and where to start when you need a working REST API in under a minute.
+mode: custom
 keywords:
   - json-server
   - mock API
@@ -11,46 +12,7 @@ lastVerified: 2026-10-30
 verifiedVersion: 1.0.0-beta.15
 ---
 
-JSON Server turns a plain JSON file into a working REST API. You describe your data once in `db.json`, run one command, and your frontend can immediately read and write real HTTP endpoints.
+<HideShell />
+<Landing />
 
-This field guide is an unofficial, example-driven companion for developers who want to use JSON Server confidently. It was tested against `json-server@1.0.0-beta.15` on Node.js 22. The minimum Node.js version it supports is 22.12.
-
-<Note type="info" title="Unofficial guide">
-This site is an independent learning resource. It is not published by or affiliated with the JSON Server project or its maintainers. For the project itself, see the [JSON Server repository](https://github.com/typicode/json-server).
-</Note>
-
-## Who it is for
-
-JSON Server is a good fit when you are:
-
-- building a frontend before the real backend exists;
-- writing a tutorial, workshop, or demo that needs realistic data;
-- testing how your app handles lists, filters, pagination, and errors; or
-- reproducing a bug with a small, shareable data set.
-
-It is **not** a production database. It stores data in a single JSON file and has no authentication or access control, so keep it on your own machine or a trusted development network.
-
-## What you get from one JSON file
-
-| You write | JSON Server gives you |
-| --- | --- |
-| An array such as `"posts": [...]` | A collection at `/posts` and single items at `/posts/1` |
-| An object such as `"profile": {...}` | A single resource at `/profile` |
-| Fields on your records | Filtering, sorting, and pagination through query parameters |
-| A field such as `authorId` | Related records you can include with `_embed` |
-
-Writes (`POST`, `PATCH`, `DELETE`) are saved back to your JSON file, so your data survives a server restart.
-
-## Choose your next step
-
-<CardGroup cols="2">
-
-<Card title="Quickstart" href="/quickstart" icon="book-open">
-Start a mock API and make your first requests in about five minutes.
-</Card>
-
-<Card title="Build a mock API for a frontend app" href="/guides/build-a-mock-api" icon="wrench">
-Model related data, query it, and reset it between test runs.
-</Card>
-
-</CardGroup>
+{/* The JSON Server Field Guide is an unofficial, fixture-verified interactive companion for json-server@1.0.0-beta.15. It turns a single JSON file into a live REST API with complete routing, relationship embedding, sorting, and pagination. Every claim and query pattern is proven by ground-truth recorded HTTP fixtures. */}

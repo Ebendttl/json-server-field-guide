@@ -1,5 +1,13 @@
 {
   "theme": "sharp",
+  "fonts": {
+    "heading": "Jost",
+    "body": "Jost"
+  },
+  "favicon": {
+    "light": "/brand/default-favicon-light.svg",
+    "dark": "/brand/default-favicon-dark.svg"
+  },
   "appearance": {
     "default": "dark",
     "contentIcons": "accent"
@@ -17,6 +25,10 @@
     ]
   },
   "navbar": {
+    "logo": {
+      "light": "/brand/default-logo-light.svg",
+      "dark": "/brand/default-logo-dark.svg"
+    },
     "primary": {
       "label": "Quickstart",
       "href": "/quickstart"

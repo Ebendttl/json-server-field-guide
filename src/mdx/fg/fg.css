@@ -1,0 +1,543 @@
+/* ==========================================================================
+   JSON Server Field Guide — Namespaced Component Styles (.fg-*)
+   Pure CSS tokens derived from Thally theme variables & dealt palette
+   No Tailwind utilities. Zero runtime dependencies.
+   ========================================================================== */
+
+.fg-root {
+  --fg-font-display: 'Jost', system-ui, -apple-system, sans-serif;
+  --fg-font-body: 'Jost', system-ui, -apple-system, sans-serif;
+  --fg-font-code: ui-monospace, 'JetBrains Mono', 'Fira Code', monospace; /* taste-skill-ignore */
+
+  /* Theme tokens mapped to Thally HSL variables */
+  --fg-bg: hsl(var(--thally-background));
+  --fg-surface: hsl(var(--thally-card));
+  --fg-surface-subtle: hsl(var(--thally-muted));
+  --fg-border: hsl(var(--thally-border));
+  --fg-ink: hsl(var(--thally-foreground));
+  --fg-muted: hsl(var(--thally-muted-foreground));
+  --fg-accent: hsl(var(--thally-accent));
+  --fg-accent-ink: hsl(var(--thally-accent-foreground));
+
+  font-family: var(--fg-font-body);
+  color: var(--fg-ink);
+  background-color: var(--fg-bg);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .fg-root {
+    padding: 0 40px 100px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .fg-root {
+    padding: 0 48px 120px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   1. Hero Section
+   -------------------------------------------------------------------------- */
+.fg-hero {
+  padding-top: 48px;
+  padding-bottom: 64px;
+}
+
+@media (min-width: 768px) {
+  .fg-hero {
+    padding-top: 64px;
+    padding-bottom: 80px;
+  }
+}
+
+.fg-hero-content {
+  max-width: 840px;
+  margin-bottom: 40px;
+}
+
+.fg-headline {
+  font-family: var(--fg-font-display);
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  margin: 0 0 20px 0;
+  color: var(--fg-ink);
+}
+
+.fg-subhead {
+  font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
+  line-height: 1.5;
+  color: var(--fg-muted);
+  max-width: 640px;
+  margin: 0 0 32px 0;
+}
+
+.fg-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.fg-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--fg-accent);
+  color: var(--fg-accent-ink);
+  font-family: var(--fg-font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+
+.fg-btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.fg-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--fg-surface);
+  color: var(--fg-ink);
+  font-family: var(--fg-font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: background-color 150ms ease-out, transform 150ms ease-out;
+}
+
+.fg-btn-secondary:hover {
+  background-color: var(--fg-surface-subtle);
+  transform: translateY(-1px);
+}
+
+.fg-works-with {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+}
+
+.fg-works-with-label {
+  font-weight: 500;
+}
+
+.fg-works-with-item {
+  color: var(--fg-ink);
+  opacity: 0.75;
+}
+
+/* --------------------------------------------------------------------------
+   Interactive Console / Static Preview Panel (data-ui)
+   -------------------------------------------------------------------------- */
+[data-ui].fg-preview-panel {
+  background-color: var(--fg-surface);
+  border-radius: 12px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 24px;
+}
+
+@media (min-width: 900px) {
+  [data-ui].fg-preview-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+[data-ui] .fg-preview-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+[data-ui] .fg-preview-pane-divider {
+  border-top: 1px solid var(--fg-border);
+}
+
+@media (min-width: 900px) {
+  [data-ui] .fg-preview-pane-divider {
+    border-top: none;
+    border-left: 1px solid var(--fg-border);
+  }
+}
+
+[data-ui] .fg-pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background-color: var(--fg-surface-subtle);
+  border-bottom: 1px solid var(--fg-border);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.fg-pane-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--fg-accent);
+}
+
+.fg-badge-method {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  background-color: var(--fg-accent);
+  color: var(--fg-accent-ink);
+}
+
+.fg-badge-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  background-color: var(--fg-surface);
+  color: var(--fg-ink);
+}
+
+.fg-badge-recorded {
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+}
+
+.fg-code-content {
+  margin: 0;
+  padding: 18px;
+  font-family: var(--fg-font-code);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  overflow-x: auto;
+  color: var(--fg-ink);
+  background: transparent;
+  white-space: pre;
+}
+
+/* --------------------------------------------------------------------------
+   Sections General
+   -------------------------------------------------------------------------- */
+.fg-section {
+  padding-top: 72px;
+  padding-bottom: 40px;
+}
+
+.fg-section-title {
+  font-family: var(--fg-font-display);
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin: 0 0 16px 0;
+  color: var(--fg-ink);
+}
+
+.fg-section-lead {
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--fg-muted);
+  max-width: 620px;
+  margin: 0 0 40px 0;
+}
+
+/* --------------------------------------------------------------------------
+   2. How It Works (Call and Response Column)
+   -------------------------------------------------------------------------- */
+.fg-steps-column {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 800px;
+}
+
+.fg-step-block {
+  background-color: var(--fg-surface);
+  border-radius: 10px;
+  padding: 24px;
+}
+
+.fg-step-order {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--fg-ink);
+  margin: 0 0 12px 0;
+}
+
+.fg-step-desc {
+  font-size: 0.9375rem;
+  color: var(--fg-muted);
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+[data-ui].fg-step-snippet {
+  background-color: var(--fg-surface-subtle);
+  border-radius: 6px;
+  padding: 14px 18px;
+  font-family: var(--fg-font-code);
+  font-size: 0.8125rem;
+  overflow-x: auto;
+  margin: 0;
+  color: var(--fg-ink);
+}
+
+/* --------------------------------------------------------------------------
+   3. Showcase / Query Recipes
+   -------------------------------------------------------------------------- */
+.fg-recipes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .fg-recipes-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fg-recipe-card {
+  background-color: var(--fg-surface);
+  border-radius: 10px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.fg-recipe-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.fg-recipe-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--fg-ink);
+}
+
+.fg-recipe-query {
+  display: inline-block;
+  font-family: var(--fg-font-code);
+  font-size: 0.8125rem;
+  color: var(--fg-accent);
+  background-color: var(--fg-surface-subtle);
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  word-break: break-all;
+}
+
+.fg-recipe-desc {
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+  line-height: 1.45;
+  margin: 0 0 16px 0;
+  flex-grow: 1;
+}
+
+/* --------------------------------------------------------------------------
+   4. Sharp Edges / Quirks List
+   -------------------------------------------------------------------------- */
+.fg-quirks-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .fg-quirks-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fg-quirk-card {
+  background-color: var(--fg-surface);
+  border-radius: 10px;
+  padding: 24px;
+}
+
+.fg-quirk-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: var(--fg-ink);
+}
+
+.fg-quirk-desc {
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+}
+
+.fg-fixture-link {
+  font-size: 0.8125rem;
+  color: var(--fg-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   5. FAQ Section
+   -------------------------------------------------------------------------- */
+.fg-faq-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .fg-faq-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.fg-faq-card {
+  background-color: var(--fg-surface);
+  border-radius: 10px;
+  padding: 24px;
+}
+
+.fg-faq-q {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: var(--fg-ink);
+}
+
+.fg-faq-a {
+  font-size: 0.9375rem;
+  color: var(--fg-muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. Action Tile / CTA Section
+   -------------------------------------------------------------------------- */
+.fg-cta-stage {
+  margin-top: 48px;
+  background-color: var(--fg-surface);
+  border-radius: 14px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .fg-cta-stage {
+    padding: 64px 48px;
+  }
+}
+
+.fg-cta-headline {
+  font-family: var(--fg-font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px 0;
+  color: var(--fg-ink);
+}
+
+.fg-cta-desc {
+  font-size: 1.0625rem;
+  color: var(--fg-muted);
+  max-width: 540px;
+  margin: 0 auto 32px auto;
+  line-height: 1.5;
+}
+
+.fg-cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   7. Footer Section
+   -------------------------------------------------------------------------- */
+.fg-footer {
+  margin-top: 96px;
+  padding-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+}
+
+@media (min-width: 768px) {
+  .fg-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.fg-footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fg-footer-brand {
+  font-weight: 600;
+  color: var(--fg-ink);
+}
+
+.fg-footer-disclaimer {
+  max-width: 480px;
+  line-height: 1.45;
+  font-size: 0.8125rem;
+}
+
+.fg-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+}
+
+.fg-footer-link {
+  color: var(--fg-ink);
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+
+.fg-footer-link:hover {
+  color: var(--fg-accent);
+}
