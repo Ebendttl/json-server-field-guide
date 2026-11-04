@@ -56,6 +56,19 @@ const presets = CURATED_KEYS.map(({ scenario, stepIndex, label }) => {
   };
 });
 
+// All 91 request signatures across all 5 scenarios for exact fixture matching
+const allSignatures = [];
+for (const scenario of fixtures.scenarios) {
+  for (const step of scenario.steps) {
+    allSignatures.push({
+      dataset: scenario.dataset,
+      method: step.method,
+      path: step.path,
+      requestBody: step.requestBody || null,
+    });
+  }
+}
+
 const content = `/**
  * Generated lightweight subset of fixtures for client-side MDX components.
  * Run \`node scripts/fg-generate-subset.mjs\` to regenerate.
@@ -73,9 +86,18 @@ export interface RecordedPreset {
   responseBody: any;
 }
 
+export interface RecordedSignature {
+  dataset: 'quickstart' | 'tasks';
+  method: string;
+  path: string;
+  requestBody: any;
+}
+
 export const INITIAL_DATASETS = ${JSON.stringify(fixtures.datasets, null, 2)} as const;
 
 export const RECORDED_PRESETS: RecordedPreset[] = ${JSON.stringify(presets, null, 2)};
+
+export const RECORDED_SIGNATURES: RecordedSignature[] = ${JSON.stringify(allSignatures, null, 2)};
 `;
 
 writeFileSync(outputPath, content);

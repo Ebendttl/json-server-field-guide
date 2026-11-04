@@ -15,6 +15,13 @@ export interface RecordedPreset {
   responseBody: any;
 }
 
+export interface RecordedSignature {
+  dataset: 'quickstart' | 'tasks';
+  method: string;
+  path: string;
+  requestBody: any;
+}
+
 export const INITIAL_DATASETS = {
   "quickstart": {
     "posts": [
@@ -467,5 +474,591 @@ export const RECORDED_PRESETS: RecordedPreset[] = [
       "id": "1",
       "name": "Website relaunch"
     }
+  }
+];
+
+export const RECORDED_SIGNATURES: RecordedSignature[] = [
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts/1",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts/999",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/authors",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/authors/2",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/profile",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts?views:gt=100",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts?_sort=-views",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts?_sort=views",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts?_page=1&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts/1?_embed=author",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/authors/1?_embed=posts",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts?title=Hello%20JSON%20Server",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/nope",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "POST",
+    "path": "/posts",
+    "requestBody": {
+      "title": "My first post",
+      "views": 0,
+      "authorId": "2"
+    }
+  },
+  {
+    "dataset": "quickstart",
+    "method": "PATCH",
+    "path": "/posts/1",
+    "requestBody": {
+      "views": 101
+    }
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "DELETE",
+    "path": "/posts/3",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/posts/3",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "PUT",
+    "path": "/posts/2",
+    "requestBody": {
+      "title": "Replaced",
+      "views": 1,
+      "authorId": "1"
+    }
+  },
+  {
+    "dataset": "quickstart",
+    "method": "PATCH",
+    "path": "/profile",
+    "requestBody": {
+      "name": "renamed"
+    }
+  },
+  {
+    "dataset": "quickstart",
+    "method": "GET",
+    "path": "/profile",
+    "requestBody": null
+  },
+  {
+    "dataset": "quickstart",
+    "method": "PATCH",
+    "path": "/posts/999",
+    "requestBody": {
+      "views": 1
+    }
+  },
+  {
+    "dataset": "quickstart",
+    "method": "DELETE",
+    "path": "/posts/999",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks/3",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks/999",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/projects",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/projects/1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?status=open",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?status=open&priority:gte=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?status:ne=done",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?priority:gt=1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?priority:lt=3",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?priority:lte=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?priority:eq=3",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?status:in=open,blocked",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?title:contains=release",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?title:startsWith=Set",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?status=open&status=blocked",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_sort=-priority,title",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_sort=priority",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_sort=-title",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?priority=3",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId=1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId:ne=1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId:gte=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectid=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId:contains=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId:startsWith=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId:endsWith=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId:in=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId:eq=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?status=OPEN",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?title:contains=Release",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?priority:gte=2&priority:lte=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_sort=status,-priority",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_sort=-id",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_page=1&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_page=2&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_page=3&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_page=9&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_per_page=1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_page=1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?status=open&_page=1&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?status=open&_sort=-priority&_page=1&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_sort=-priority&_page=1&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_limit=1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_start=0&_end=1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_start=1&_limit=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_page=0&_per_page=2",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_page=1&_per_page=0",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_page=abc",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks/3?_embed=project",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/projects/2?_embed=tasks",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/projects/1?_embed=tasks",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?_embed=project",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/projects?_embed=tasks",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks/3?_embed=nothing",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "POST",
+    "path": "/tasks",
+    "requestBody": {
+      "title": "Review pull request",
+      "status": "open",
+      "priority": 2,
+      "projectId": "1"
+    }
+  },
+  {
+    "dataset": "tasks",
+    "method": "POST",
+    "path": "/tasks",
+    "requestBody": {
+      "id": "custom-id",
+      "title": "Own id",
+      "status": "open",
+      "priority": 1,
+      "projectId": "1"
+    }
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks/custom-id",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "PATCH",
+    "path": "/tasks/1",
+    "requestBody": {
+      "status": "done"
+    }
+  },
+  {
+    "dataset": "tasks",
+    "method": "PUT",
+    "path": "/tasks/4",
+    "requestBody": {
+      "title": "Replaced",
+      "status": "open",
+      "priority": 1,
+      "projectId": "2"
+    }
+  },
+  {
+    "dataset": "tasks",
+    "method": "DELETE",
+    "path": "/tasks/5",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "DELETE",
+    "path": "/projects/1",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/projects",
+    "requestBody": null
+  },
+  {
+    "dataset": "tasks",
+    "method": "POST",
+    "path": "/tasks",
+    "requestBody": {
+      "title": "Number FK",
+      "status": "open",
+      "priority": 1,
+      "projectId": 2
+    }
+  },
+  {
+    "dataset": "tasks",
+    "method": "GET",
+    "path": "/tasks?projectId=2",
+    "requestBody": null
   }
 ];
