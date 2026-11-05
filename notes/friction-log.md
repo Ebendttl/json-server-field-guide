@@ -67,3 +67,14 @@ Real obstacles encountered while using the Thally platform.
   `package.json` is neither in `userOwnedNeverOverwrite` nor `frameworkSyncEligible`.
   Adding project scripts (`test:engine`, `verify:fixtures`) requires manual review
   and conflict resolution whenever running `npm run starter:update`.
+
+## 2026-11-05 — Phase 4: Production Polish and Deployment Handoff
+
+- **Thally Cloud deployment failure (`managed_runtime_unavailable`).**
+  During automated Cloud deployment (deployment `cb101d12-b0e8-4694-90f8-acece6f8ba42`), the platform failed with `managed_runtime_unavailable`. The deployment artifact builds cleanly locally (`npm run build` with Turbopack), but the managed runtime control plane refused the deployment handoff. _Workaround: Documented fallback manual Cloudflare Worker / OpenNext deployment steps in `notes/handoff.md`._
+
+- **Three Key Platform Observations:**
+  1. *What worked exceptionally well*: Custom MDX components registered via `src/mdx/custom-components.tsx` seamlessly hydrate and run interactive client-side logic (`<Console />`, `<TryIt />`, `<Verified />`) with zero server/client hydration mismatches. Turbopack build times are sub-second (`~400ms`).
+  2. *Friction*: Brand asset theming (`/api/brand/logo`) relies heavily on `next-themes` client state (`useReaderTheme()`). Headless testing tools that simply toggle CSS `.dark` classes fail to trigger React re-renders unless the `button[aria-label="Toggle theme"]` control is explicitly dispatched.
+  3. *Suggested improvements*: Provide an authored `mode: "landing"` or `layout: "landing"` option in frontmatter to omit sidebar and docs navigation tabs cleanly without requiring custom `<HideShell />` CSS overrides. Provide formal recognition for user-owned scripts in `scripts/` or a dedicated user script convention.
+
