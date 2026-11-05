@@ -65,7 +65,7 @@ export function Landing() {
               Items are retrieved by their <code>id</code> property. On POST, beta.15 ignores any custom ID in the
               request body and generates a unique string identifier.
             </p>
-            <pre className="fg-step-snippet" data-ui>
+            <pre className="fg-step-snippet" data-ui tabIndex={0} role="region" aria-label="Code example">
               <code>{`// POST /tasks with body: { "title": "New item", "id": "custom-id" }\n// Response 201 Created:\n{\n  "title": "New item",\n  "id": "W9ZVJeHocW0"\n}`}</code>
             </pre>
           </div>
@@ -76,7 +76,7 @@ export function Landing() {
               POST, PUT, PATCH, and DELETE operations update the JSON file on disk immediately.
               Deleting a parent resource nullifies child foreign keys instead of cascading.
             </p>
-            <pre className="fg-step-snippet" data-ui>
+            <pre className="fg-step-snippet" data-ui tabIndex={0} role="region" aria-label="Code example">
               <code>{`// PATCH /posts/1 with body: { "views": 101 }\n// Response 200 OK:\n{ "id": "1", "title": "Hello JSON Server", "views": 101, "authorId": "1" }`}</code>
             </pre>
           </div>
@@ -97,11 +97,14 @@ export function Landing() {
               <span className="fg-badge-method">GET</span>
               <h3 className="fg-recipe-title">Operator Filters</h3>
             </div>
-            <code className="fg-recipe-query">/tasks?status=open&priority:gte=2</code>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <code className="fg-recipe-query">/tasks?status=open&priority:gte=2</code>
+              <span className="fg-badge-recorded">recorded fixture</span>
+            </div>
             <p className="fg-recipe-desc">
               Filter with comparison operators including <code>:gte</code>, <code>:gt</code>, <code>:lte</code>, <code>:lt</code>, <code>:ne</code>, and <code>:in</code>.
             </p>
-            <pre className="fg-step-snippet" data-ui>
+            <pre className="fg-step-snippet" data-ui tabIndex={0} role="region" aria-label="Query result">
               <code>{JSON.stringify([
                 { id: "1", title: "Draft homepage copy", status: "open", priority: 2, projectId: "1" },
                 { id: "3", title: "Set up CI", status: "open", priority: 3, projectId: "2" }
@@ -114,15 +117,20 @@ export function Landing() {
               <span className="fg-badge-method">GET</span>
               <h3 className="fg-recipe-title">Multi-Key Sort</h3>
             </div>
-            <code className="fg-recipe-query">/tasks?_sort=-priority,title</code>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <code className="fg-recipe-query">/tasks?_sort=-priority,title</code>
+              <span className="fg-badge-recorded">recorded fixture</span>
+            </div>
             <p className="fg-recipe-desc">
               Order results by multiple properties. Prepend <code>-</code> for descending order and separate keys with commas.
             </p>
-            <pre className="fg-step-snippet" data-ui>
+            <pre className="fg-step-snippet" data-ui tabIndex={0} role="region" aria-label="Query result">
               <code>{JSON.stringify([
-                { id: "2", title: "Design navigation", priority: 3 },
-                { id: "5", title: "Fix login bug", priority: 3 },
-                { id: "3", title: "Set up CI", priority: 3 }
+                { id: "2", title: "Design navigation", status: "done", priority: 3, projectId: "1" },
+                { id: "5", title: "Fix login bug", status: "blocked", priority: 3, projectId: "2" },
+                { id: "3", title: "Set up CI", status: "open", priority: 3, projectId: "2" },
+                { id: "1", title: "Draft homepage copy", status: "open", priority: 2, projectId: "1" },
+                { id: "4", title: "Write release notes", status: "open", priority: 1, projectId: "2" }
               ], null, 2)}</code>
             </pre>
           </div>
@@ -132,11 +140,14 @@ export function Landing() {
               <span className="fg-badge-method">GET</span>
               <h3 className="fg-recipe-title">Pagination Envelope</h3>
             </div>
-            <code className="fg-recipe-query">/tasks?_page=1&_per_page=2</code>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <code className="fg-recipe-query">/tasks?_page=1&_per_page=2</code>
+              <span className="fg-badge-recorded">recorded fixture</span>
+            </div>
             <p className="fg-recipe-desc">
               Returns structured pagination metadata with total count, page links, and current items slice.
             </p>
-            <pre className="fg-step-snippet" data-ui>
+            <pre className="fg-step-snippet" data-ui tabIndex={0} role="region" aria-label="Query result">
               <code>{JSON.stringify({
                 first: 1,
                 prev: null,
@@ -144,7 +155,10 @@ export function Landing() {
                 last: 3,
                 pages: 3,
                 items: 5,
-                data: [{ id: "1", title: "Draft homepage copy" }, { id: "2", title: "Design navigation" }]
+                data: [
+                  { id: "1", title: "Draft homepage copy", status: "open", priority: 2, projectId: "1" },
+                  { id: "2", title: "Design navigation", status: "done", priority: 3, projectId: "1" }
+                ]
               }, null, 2)}</code>
             </pre>
           </div>
@@ -154,11 +168,14 @@ export function Landing() {
               <span className="fg-badge-method">GET</span>
               <h3 className="fg-recipe-title">Relationship Embedding</h3>
             </div>
-            <code className="fg-recipe-query">/tasks/3?_embed=project</code>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <code className="fg-recipe-query">/tasks/3?_embed=project</code>
+              <span className="fg-badge-recorded">recorded fixture</span>
+            </div>
             <p className="fg-recipe-desc">
               Embed referenced parent resources directly using foreign-key relationships.
             </p>
-            <pre className="fg-step-snippet" data-ui>
+            <pre className="fg-step-snippet" data-ui tabIndex={0} role="region" aria-label="Query result">
               <code>{JSON.stringify({
                 id: "3",
                 title: "Set up CI",
@@ -203,7 +220,7 @@ export function Landing() {
           </div>
 
           <div className="fg-quirk-card">
-            <h3 className="fg-quirk-title">POST Overwrites Custom IDs</h3>
+            <h3 className="fg-quirk-title">POST ignores a custom id</h3>
             <p className="fg-quirk-desc">
               Sending an explicit <code>id</code> in a POST request body is ignored by the server. An auto-generated string identifier is always assigned.
             </p>
@@ -228,35 +245,21 @@ export function Landing() {
       <section className="fg-section">
         <h2 className="fg-section-title">Frequently answered</h2>
         <p className="fg-section-lead">
-          Essential architectural and migration questions regarding json-server 1.x.
+          Essential verified behavior questions regarding json-server@1.0.0-beta.15.
         </p>
 
         <div className="fg-faq-grid">
           <div className="fg-faq-card">
-            <h3 className="fg-faq-q">Is json-server 1.x backward compatible with 0.17?</h3>
-            <p className="fg-faq-a">
-              No. Version 1.x is a complete rewrite built on modern Lowdb. Query parameters, pagination envelopes, and ID generation formats have changed significantly.
-            </p>
-          </div>
-
-          <div className="fg-faq-card">
             <h3 className="fg-faq-q">Can I set my own custom record IDs on creation?</h3>
             <p className="fg-faq-a">
-              No. In beta.15, POST requests automatically generate random alphanumeric string IDs. Any client-provided ID in the payload is ignored.
+              No. In beta.15, POST requests automatically generate random string IDs. Any custom id in the request body is ignored (verified in fixture tasks-write[1]).
             </p>
           </div>
 
           <div className="fg-faq-card">
             <h3 className="fg-faq-q">How does persistence work during testing?</h3>
             <p className="fg-faq-a">
-              All mutating operations (POST, PUT, PATCH, DELETE) write directly back to the underlying JSON file on disk. Changes persist across server restarts.
-            </p>
-          </div>
-
-          <div className="fg-faq-card">
-            <h3 className="fg-faq-q">Should json-server be used in production?</h3>
-            <p className="fg-faq-a">
-              No. json-server is designed strictly for local prototyping, test fixtures, and frontend development where an instant REST API is needed.
+              All mutating operations (POST, PUT, PATCH, DELETE) write directly back to the database file on disk immediately (verified in quickstart-write and tasks-write).
             </p>
           </div>
         </div>
@@ -266,7 +269,7 @@ export function Landing() {
       <section className="fg-cta-stage">
         <h2 className="fg-cta-headline">Ready to spin up a mock API?</h2>
         <p className="fg-cta-desc">
-          Follow the shortest working path to create a database file and query endpoints in under two minutes.
+          Follow the shortest working path to create a database file and query endpoints in about five minutes.
         </p>
         <div className="fg-cta-buttons">
           <Link href="/quickstart" className="fg-btn-primary">
@@ -283,7 +286,7 @@ export function Landing() {
         <div className="fg-footer-left">
           <span className="fg-footer-brand">JSON Server Field Guide</span>
           <span className="fg-footer-disclaimer">
-            Unofficial, example-driven companion for json-server@1.0.0-beta.15. Not affiliated with or endorsed by typicode or the JSON Server project.
+            Unofficial, example-driven companion for json-server@1.0.0-beta.15. Not affiliated with or endorsed by typicode or the JSON Server project. MIT licensed.
           </span>
           <span className="fg-footer-disclaimer">
             Created by Ebenezer Akinseinde Akindele. Built on the Thally documentation platform.

@@ -34,6 +34,9 @@
       "href": "/quickstart"
     }
   },
+  "footer": {
+    "copyright": "© {year} JSON Server Field Guide. MIT licensed."
+  },
   "tabs": [
     {
       "tab": "Docs",
