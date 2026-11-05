@@ -54,7 +54,7 @@ export function Landing() {
               Arrays like <code>posts: []</code> become full collection endpoints (<code>GET /posts</code>, <code>POST /posts</code>).
               Objects like <code>profile: {}</code> become singleton endpoints with GET and PATCH support.
             </p>
-            <pre className="fg-step-snippet" data-ui>
+            <pre className="fg-step-snippet" data-ui tabIndex={0} role="region" aria-label="Code example">
               <code>{`// In db.json:\n{ "posts": [...], "authors": [...], "profile": { "name": "demo" } }\n\n// Available routes:\n// GET /posts          -> Array of posts\n// GET /posts/1        -> Single item by id\n// GET /profile        -> Singleton object`}</code>
             </pre>
           </div>
