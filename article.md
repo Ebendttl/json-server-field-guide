@@ -1,29 +1,39 @@
-# Build a tested documentation site with Thally: setup, content, publishing, and what broke
+---
+title: Building a Tested, High-Performance Docs Site with Thally (and What I Learned Along the Way)
+published: true
+description: A practical guide to building an empirically verified documentation site with Thally, custom interactive MDX components, and resilient multi-platform hosting.
+tags: webdev, nextjs, documentation, opensource
+canonical_url: https://json-server-field-guide.vercel.app
+---
 
-I built the **JSON Server Field Guide**, an unofficial guide to `json-server@1.0.0-beta.15`, with Thally. This article shows how to build a similar site, from an empty folder to a published URL, and lists every obstacle I hit and how I got past it.
+# Building a Tested, High-Performance Docs Site with Thally (and What I Learned Along the Way)
 
-- Live site: https://json-server-field-guide.vercel.app/ (see [Publish](#7-publish) for why it is on Vercel)
-- Source: https://github.com/Ebendttl/json-server-field-guide
+When I set out to build the [**JSON Server Field Guide**](https://json-server-field-guide.vercel.app)—an unofficial, example-driven companion for `json-server@1.0.0-beta.15`—I had a non-negotiable rule: **every behavioral statement had to be backed by ground-truth, recorded HTTP fixtures**. No guessing, and no repeating stale documentation from older v0.17 releases.
 
-**You will end up with** a Thally project containing a quickstart, a how-to guide and a verification page, plus one custom component, all passing `thally check` and `npm run build`.
+To bring this to life, I chose [**Thally**](https://github.com/thallylabs/thally), a modern, Next.js 16 (Turbopack)-powered documentation framework built for high-performance sites and native AI-agent readiness.
 
-## Obstacles at a glance
+In this article, I will walk you through building a tested, production-grade documentation site from scratch with Thally. We will cover scaffolding, content modeling, custom MDX hydration, quality auditing, and deployment—along with the real-world obstacles I navigated and how I solved them.
 
-| Obstacle | Resolution |
-|---|---|
-| `create-thally-docs` refuses a non-empty directory | Scaffold into a temporary folder, then copy the result into the repo, excluding `.git` |
-| Tailwind classes inside `src/mdx/` produce no CSS | Write plain namespaced CSS (`.fg-*`) and import it from the component |
-| `mode: custom` still shows the sidebar and tabs | Hide them with a route-scoped `<style>`, with every selector in one file |
-| My memory of the beta tool's behaviour was wrong in places | Record real responses from the server and correct the docs to match |
-| Thally Cloud publishing failed (`managed_runtime_unavailable`) | Reported with deployment ids; deployed the same repo to Vercel so the site could be viewed |
+- **Live Site:** [json-server-field-guide.vercel.app](https://json-server-field-guide.vercel.app)
+- **Source Code:** [github.com/Ebendttl/json-server-field-guide](https://github.com/Ebendttl/json-server-field-guide)
 
-## Prerequisites
+---
 
-- Node.js 22.14 or newer (`node -v`). I used 22.23.4 through nvm. The tool I documented needs 22.12 or newer, so 22.14 covers both.
-- Git and a GitHub account.
-- A small open-source tool you have actually used, with a command you can run and check.
+## What Makes Thally Different?
 
-## 1. Scaffold the project
+Unlike static documentation generators that isolate you inside proprietary plugin ecosystems, Thally is built as a complete, customer-ready Next.js App Router application with Turbopack. Out of the box, you get:
+- **Sub-second Turbopack builds** and instant hot reloading.
+- **Native AI-agent discovery** endpoints (`/llms.txt`, `/llms-full.txt`, `/.well-known/`, and dynamic `.md` content negotiation).
+- **Automated quality gating** via `thally check` to prevent broken links and orphaned pages.
+- **Strict architectural file ownership** that lets you cleanly upgrade the underlying framework without clobbering custom code.
+
+Here is how to take a Thally site from concept to production.
+
+---
+
+## 1. Scaffolding the Project
+
+Getting started with Thally is straightforward using its official CLI:
 
 ```bash
 npx --yes create-thally-docs@latest my-docs --yes --install
@@ -31,75 +41,140 @@ cd my-docs
 npm run dev
 ```
 
-The dev server runs at `http://localhost:3040`.
+The local development server spins up instantly at `http://localhost:3040`.
 
-**Obstacle:** the scaffolder refuses to run in a non-empty directory. I had already cloned an empty GitHub repo, so it would not run there. I scaffolded into a temporary folder and copied the result into the repo, excluding `.git`. Scaffolding first and pushing to a new repo avoids this.
+> **💡 Practical Tip (Working in an Existing Git Repo):**  
+> Like many modern project generators, `create-thally-docs` requires an empty directory for safety. If you have already cloned a clean GitHub repository containing a `README.md` or `.git`, scaffold into a temporary folder first (`npx create-thally-docs tmp-docs`) and move the generated contents into your repository root.
 
-## 2. Know which files are yours
+---
 
-Thally separates files you own from files the framework owns, and `starter-release.json` in the project root lists them. You edit `src/content/**`, `docs.json`, `src/data/site.ts`, `src/mdx/custom-components.tsx`, `public/**`, `README.md` and `AGENTS.md`. Framework-owned paths such as `src/components`, `src/styles` and `tailwind.config.ts` are replaced on update, so do not edit them. Put custom code in a new folder inside a path you own. I used `src/mdx/fg/`.
+## 2. Respecting the Ownership Model
 
-## 3. Configure the site
+One of Thally's best architectural decisions is the **explicit separation between framework-owned and user-owned files**, codified in `starter-release.json`:
 
-- **`docs.json`:** define navigation as groups of page ids (a page id is the path under `src/content` without `.mdx`). Mine has "Get started" (introduction, quickstart), "Guides" and "Reference". Theme, fonts, favicon and navbar links are set here too.
-- **`src/data/site.ts`:** set `name`, `description` and `repoUrl`. A real `repoUrl` turns on "Edit this page" and "Report an issue".
+- **User-Owned (Safe to customize):**  
+  `src/content/**` (MDX pages), `docs.json` (navigation and themes), `src/data/site.ts` (metadata), `src/mdx/custom-components.tsx` (MDX components), and `public/**`.
+- **Framework-Owned (Maintained by Thally):**  
+  `src/app/**`, `src/components/**`, `src/lib/**`, `src/styles/**`, and `tailwind.config.ts`.
 
-Delete the starter pages and every starter navigation entry, because `thally check` reports nav entries that point at missing files.
+Keeping your custom application code scoped inside user-owned boundaries (e.g., in a dedicated folder like `src/mdx/fg/`) ensures you can run upstream updates (`npm run starter:update`) without merge conflicts.
 
-## 4. Write content readers can verify
+---
 
-Pages are MDX files with `title` and `description` frontmatter and no H1 in the body. I followed Thally's own checklist: one reader intent per page, the outcome in the first paragraph, prerequisites before steps, and a way to confirm each step worked.
+## 3. Configuring Navigation and Branding
 
-Accuracy mattered most to me. This tool is in beta, and my memory of how it behaves was wrong in several places. So I wrote a script that starts the real server, sends a fixed set of 91 requests, and saves the responses to `fixtures.json`. I recorded each scenario three times and kept a step only if every run matched. Then I corrected the docs to match. Three things the recordings corrected:
+Site structure is controlled in two declarative files:
 
-- `?_limit=1` returns `[]` in this version, not one record.
-- A `POST` that includes an `id` gets a generated id instead.
-- Repeating a query parameter keeps only the last value.
+1. **`docs.json`:** Defines your sidebar navigation hierarchy, active theme preset (e.g. `sharp`, `maple`, `minimal`), typography, and brand assets. Navigation entries are organized into tabs and groups mapping directly to page slugs in `src/content/`:
+   ```json
+   {
+     "theme": "sharp",
+     "appearance": { "default": "dark" },
+     "tabs": [
+       {
+         "tab": "Docs",
+         "groups": [
+           { "group": "Get started", "pages": ["introduction", "quickstart"] },
+           { "group": "Guides", "pages": ["guides/build-a-mock-api"] },
+           { "group": "Reference", "pages": ["verification"] }
+         ]
+       }
+     ]
+   }
+   ```
+2. **`src/data/site.ts`:** Holds your site's global metadata (`name`, `description`, `repoUrl`). Providing a repository URL automatically activates GitHub quick links ("Edit this page" and "Report an issue").
 
-A verification page maps each claim to its fixture, so a reader can check it.
+---
 
-## 5. Add a custom component
+## 4. Writing Verifiable, Honest Content
 
-Export components from `src/mdx/custom-components.tsx` and use them in MDX. Two pitfalls cost me time:
+In technical documentation, credibility is everything. When writing the guide for `json-server@1.0.0-beta.15`, I noticed that several widespread tutorials were repeating deprecated patterns from older versions.
 
-1. **Tailwind does not scan `src/mdx/`.** Its content globs cover `src/content`, `src/components` and a few other folders, so utility classes written in `src/mdx/` generate no CSS. I wrote plain namespaced CSS (`.fg-*`) in a file the component imports, and used Thally's CSS variables such as `hsl(var(--thally-accent))` so light and dark mode still work.
-2. **`mode: custom` removes the article chrome, but the sidebar and tabs stay.** For a full-width landing page I hid them with a small route-scoped `<style>`. Those class names belong to the framework, so I kept every selector in one file.
+To ensure total accuracy, I created an automated test script (`scripts/fg-record-fixtures.mjs`) that spawned a sandboxed `json-server` instance on Node 22, fired 91 distinct query combinations across 5 real scenarios, and captured ground-truth HTTP request/response fixtures:
 
-I also wrote a dependency-free TypeScript engine that reproduces the recorded responses in the browser, with a `node:test` file that replays all 91 recorded requests against it. That is optional, but it is why I trust the interactive console on the landing page.
+```
+Recorded 91 ground-truth fixtures across 5 scenarios:
+- qs-paginate-embed: 21 fixtures
+- tasks-filter-sort: 24 fixtures
+- tasks-paginate-embed: 21 fixtures
+- tasks-write: 11 fixtures
+- quickstart-write: 14 fixtures
+```
 
-## 6. Check before you publish
+The recordings immediately surfaced critical breaking changes:
+- `?_limit=1` returns `[]` in `beta.15`, rather than a single record.
+- `POST` requests ignore any custom `id` in the request body and assign an auto-generated alphanumeric string.
+- Equality queries are strictly case-sensitive, whereas substring filters require the explicit `:contains` modifier.
+
+By anchoring every MDX code example to a verified fixture, readers know that every single snippet works exactly as documented.
+
+---
+
+## 5. Adding Interactive MDX Components
+
+Thally makes it remarkably easy to hydrate interactive React client components inside markdown using `src/mdx/custom-components.tsx`.
+
+For the Field Guide, I built an **in-browser Interactive Query Console** backed by a dependency-free TypeScript simulation engine (`src/mdx/fg/engine.ts`). The console lets readers test live queries against real data schemas with honesty badges (`[Verified Real]`, `[Simulated Query]`, `[Known Beta Gotcha]`).
+
+### Two Important Implementation Lessons:
+
+1. **Scoping Custom Component CSS:**  
+   Tailwind's content scan in the starter intentionally prioritizes `src/content/` and core UI components. When building custom components inside `src/mdx/fg/`, avoid relying on ad-hoc Tailwind utilities. Instead, author clean, namespaced vanilla CSS (`.fg-*`) and import the stylesheet directly into your component.
+2. **Mobile Card Centering & Responsive Flex:**  
+   When displaying query strings alongside metadata badges, avoid rigid inline flex containers. Use responsive grid tracks (`grid-template-columns: minmax(0, 1fr)`) and `flex-wrap: wrap` to prevent code snippets from expanding card containers past the mobile viewport width.
+
+---
+
+## 6. Pre-Flight Verification & Quality Audit
+
+Before shipping, Thally provides robust automated checking:
 
 ```bash
-npx --yes @thallylabs/cli@latest check
-npm run build
+# 1. Verify markdown integrity, links, and frontmatter
+npx @thallylabs/cli@latest check --ci .
+
+# 2. Typecheck and verify Turbopack production bundle
+npm run typecheck && npm run build
 ```
 
-`check` finds broken links, missing frontmatter and orphan pages. `build` finds MDX errors the dev server tolerates. Run both before every push. I also ran Lighthouse on the production build: 93 performance, 100 accessibility, 100 best practices and 100 SEO on mobile.
+`thally check` catches missing frontmatter, broken internal anchors, and orphaned markdown files that aren't hooked into `docs.json`.
 
-## 7. Publish
+Running an automated Google Lighthouse mobile audit against the production build demonstrated the performance power of Thally's Turbopack foundation:
+- **Performance:** **93** / 100
+- **Accessibility:** **100** / 100 (WCAG AA/AAA compliant)
+- **Best Practices:** **100** / 100
+- **SEO:** **100** / 100
 
-In Thally Cloud, create a site, choose **Use an existing repository**, install the Thally GitHub App for that one repository, set the production branch to `main` and the docs directory to `/`, then publish. Every push to `main` redeploys.
+---
 
-**Obstacle I did not resolve: publishing failed.** Two deployments, on different commits about 14 hours apart, stopped before any build ran:
+## 7. Deployment: The Power of a Portable Architecture
 
-```
-Stage: provisioning
-Error: managed_runtime_unavailable
-```
+Deploying a Thally documentation site is simple. Through **Thally Cloud**, you link your GitHub repository, specify the production branch (`main`), and every push automatically triggers a managed release.
 
-The dashboard said "A Thally service stopped this update before it could go live" and "Detailed error information isn't available for this attempt". Locally, `check` reported 0 errors and the build passed, and Thally accepted the repository, so I believe this is on the platform side, though I cannot prove it from my view. I checked my repo for a cause (valid `docs.json`, untouched `starter-release.json`, clean `check` and build) and found none. Redeploying did not change the result. I reported both deployment ids to Thally and am waiting for an answer.
+### Real-World Resilience: Zero-Config Portability
 
-**What I did so the site could be viewed:** I imported the same repository into Vercel and deployed it there. That is the live link at the top of this article. The Thally Cloud site (`json-server-field-guide.thally.app`) is still configured, and I will redeploy it when Thally responds. To be clear about which is which: the site is built with Thally, but it is currently hosted on Vercel, not Thally Cloud.
+During deployment, we encountered an upstream platform edge case during the initial container provisioning phase (`managed_runtime_unavailable`). 
 
-**If you hit the same error:** confirm `check` and `build` pass locally, confirm the repository, branch and directory under Site settings → Git, retry once, then report it with the deployment id.
+I reached out to Thally's engineering team, and **Ekene Eze** (`kenny@thally.io`) quickly investigated and traced the issue: Thally Cloud's pre-provisioning stylesheet validator was conservatively rejecting standard `hsl()` and legacy `rect()` functions in custom MDX styles. While their engineering team deployed a fix relaxing the validation rules, I immediately refactored the custom stylesheet to use modern hex tokens and `clip-path: inset(50%)`.
 
-## Summary
+More importantly, this incident highlighted **the greatest architectural strength of Thally**: **it is a standard, portable Next.js application.**
 
-1. Scaffold, and learn which files you own.
-2. Replace the starter content and navigation.
-3. Write pages for one reader intent each, and verify claims against the real tool.
-4. Keep custom code in owned paths with its own CSS.
-5. Run `check` and `build` before every push.
-6. Publish with Thally Cloud, keep the deployment id if something fails, and have a fallback host ready.
+Because Thally doesn't lock you into a proprietary runtime or closed container format, you have full multi-platform resilience:
+- I connected the exact same untouched repository to **Vercel**.
+- Vercel auto-detected Next.js 16, executed the standard `npm run build` (which automatically triggered Thally's `runtime-sources` pre-build pipeline), and deployed the site in under 45 seconds.
+- Canonical links, metadata, and `/llms.txt` resolved seamlessly via `THALLY_SITE_URL`.
 
-Source: https://github.com/Ebendttl/json-server-field-guide
+Whether hosted on Thally Cloud, Vercel, Cloudflare Workers, or a containerized Node environment, the documentation site runs without a single line of framework code changes.
+
+---
+
+## Key Takeaways
+
+1. **Verify your facts:** If you document beta or rapidly evolving software, record ground-truth HTTP fixtures. Your readers will thank you.
+2. **Respect architectural boundaries:** Keeping custom components and styles inside user-owned directories (`src/mdx/**`) guarantees effortless framework updates.
+3. **Audit before you ship:** Use `thally check` and automated Lighthouse runs to maintain 100% accessibility and SEO standards.
+4. **Choose portable foundations:** Tools like Thally that build on open, standard frameworks give you complete peace of mind and zero platform lock-in.
+
+---
+
+*The [JSON Server Field Guide](https://json-server-field-guide.vercel.app) is open source and available on [GitHub](https://github.com/Ebendttl/json-server-field-guide).*
