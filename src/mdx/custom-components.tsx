@@ -33,9 +33,13 @@ import type { MDXComponents } from 'mdx/types'
 import { Landing } from './fg/Landing';
 import { HideShell } from './fg/HideShell';
 import { Console } from './fg/Console';
+import { TryIt } from './fg/TryIt';
+import { Verified } from './fg/Verified';
 
 export const customComponents: MDXComponents = {
   Landing,
   HideShell,
   Console,
+  TryIt,
+  Verified,
 }

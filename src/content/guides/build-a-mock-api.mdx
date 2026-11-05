@@ -114,6 +114,10 @@ Invoke-RestMethod "http://localhost:3000/tasks?status:ne=done"
 
 The second request returns tasks `1` and `3`: open tasks with a priority of 2 or higher.
 
+<Verified fixture="tasks-filter-sort#6" />
+
+<TryIt request="/tasks?status=open&priority:gte=2" dataset="tasks" />
+
 ### Sort
 
 Prefix a field with `-` for descending order, and separate several fields with commas:
@@ -152,20 +156,9 @@ Invoke-RestMethod "http://localhost:3000/tasks?_page=2&_per_page=2"
 
 A paginated request returns an object instead of an array:
 
-```json
-{
-  "first": 1,
-  "prev": 1,
-  "next": 3,
-  "last": 3,
-  "pages": 3,
-  "items": 5,
-  "data": [
-    { "id": "3", "title": "Set up CI", "status": "open", "priority": 3, "projectId": "2" },
-    { "id": "4", "title": "Write release notes", "status": "open", "priority": 1, "projectId": "2" }
-  ]
-}
-```
+<Verified fixture="tasks-paginate-embed#1" />
+
+<TryIt request="/tasks?_page=2&_per_page=2" dataset="tasks" />
 
 Read the records from `data` and use `next` to know whether another page exists. You can combine pagination with filters and sorting:
 
@@ -199,16 +192,9 @@ Invoke-RestMethod "http://localhost:3000/tasks/3?_embed=project"
 </Tab>
 </Tabs>
 
-```json
-{
-  "id": "3",
-  "title": "Set up CI",
-  "status": "open",
-  "priority": 3,
-  "projectId": "2",
-  "project": { "id": "2", "name": "Mobile app" }
-}
-```
+<Verified fixture="tasks-paginate-embed#15" />
+
+<TryIt request="/tasks/3?_embed=project" dataset="tasks" />
 
 From a project, include all of its tasks:
 
