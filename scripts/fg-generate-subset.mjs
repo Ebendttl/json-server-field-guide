@@ -32,6 +32,7 @@ const CURATED_KEYS = [
   // Pagination & Embedding
   { scenario: 'tasks-paginate-embed', stepIndex: 0, label: 'Paginate tasks: page 1' },
   { scenario: 'tasks-paginate-embed', stepIndex: 9, label: 'Legacy _limit returns empty' },
+  { scenario: 'tasks-paginate-embed', stepIndex: 15, label: 'Embed parent on task' },
   { scenario: 'tasks-paginate-embed', stepIndex: 16, label: 'Embed children on project' },
   // Writes
   { scenario: 'quickstart-write', stepIndex: 0, label: 'Create post (POST)' },
@@ -58,14 +59,38 @@ const presets = CURATED_KEYS.map(({ scenario, stepIndex, label }) => {
 
 // All 91 request signatures across all 5 scenarios for exact fixture matching
 const allSignatures = [];
+const validFixtureIds = [];
+const recordedResponses = {};
+
 for (const scenario of fixtures.scenarios) {
-  for (const step of scenario.steps) {
+  for (let i = 0; i < scenario.steps.length; i++) {
+    const step = scenario.steps[i];
+    const fidHash = `${scenario.id}#${i}`;
+    const fidBracket = `${scenario.id}[${i}]`;
+
+    validFixtureIds.push(fidHash);
+    validFixtureIds.push(fidBracket);
+
     allSignatures.push({
       dataset: scenario.dataset,
       method: step.method,
       path: step.path,
       requestBody: step.requestBody || null,
     });
+
+    const compositeKey = `${scenario.dataset}:${step.path}`;
+    if (!recordedResponses[compositeKey] || step.method === 'GET') {
+      recordedResponses[compositeKey] = {
+        method: step.method,
+        status: step.status,
+        body: step.body,
+        fixtureId: fidHash,
+      };
+    }
+    // Also index without dataset prefix if not present
+    if (!recordedResponses[step.path] || step.method === 'GET') {
+      recordedResponses[step.path] = recordedResponses[compositeKey];
+    }
   }
 }
 
@@ -93,11 +118,22 @@ export interface RecordedSignature {
   requestBody: any;
 }
 
+export interface RecordedResponseItem {
+  method: string;
+  status: number;
+  body: any;
+  fixtureId: string;
+}
+
 export const INITIAL_DATASETS = ${JSON.stringify(fixtures.datasets, null, 2)} as const;
 
 export const RECORDED_PRESETS: RecordedPreset[] = ${JSON.stringify(presets, null, 2)};
 
 export const RECORDED_SIGNATURES: RecordedSignature[] = ${JSON.stringify(allSignatures, null, 2)};
+
+export const VALID_FIXTURE_IDS: string[] = ${JSON.stringify(validFixtureIds, null, 2)};
+
+export const RECORDED_RESPONSES: Record<string, RecordedResponseItem> = ${JSON.stringify(recordedResponses, null, 2)};
 `;
 
 writeFileSync(outputPath, content);
