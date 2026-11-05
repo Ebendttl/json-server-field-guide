@@ -1,4 +1,4 @@
-# ⚡ JSON Server Field Guide
+# JSON Server Field Guide
 
 <div align="center">
 
@@ -25,7 +25,7 @@
 
 ---
 
-## 🎯 Why This Project Exists
+## Why This Project Exists
 
 Thousands of developers reach for `json-server` to mock REST APIs for frontends and tests. However, **`json-server@1.0.0-beta.15` introduced sweeping, undocumented breaking changes from v0.17**:
 
@@ -43,7 +43,7 @@ The **JSON Server Field Guide** solves this with an **empirically audited knowle
 
 ---
 
-## 🏛️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
@@ -76,7 +76,7 @@ flowchart TD
 
 ---
 
-## 🧪 Ground-Truth Gotchas: The Truth Table
+## Ground-Truth Gotchas: The Truth Table
 
 Every statement below is proven by an exact fixture recorded in [`src/mdx/fg/fixtures.json`](src/mdx/fg/fixtures.json):
 
@@ -93,7 +93,7 @@ Every statement below is proven by an exact fixture recorded in [`src/mdx/fg/fix
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 ### 1. In-Browser Interactive Query Console
 An art-directed, live query runner embedded directly into the documentation. Select recipes, adjust query parameters, or write custom requests against the task and project database with instant visual feedback and honesty indicators:
@@ -119,7 +119,7 @@ Never take documentation claims on faith:
 
 ---
 
-## 🏆 Production Audit Scores
+## Production Audit Scores
 
 Audited with Google Lighthouse (Mobile / Moto G Power emulation) on the production Next.js build:
 
@@ -136,7 +136,7 @@ Audited with Google Lighthouse (Mobile / Moto G Power emulation) on the producti
 
 ---
 
-## 📂 Repository Layout
+## Repository Layout
 
 ```
 json-server-field-guide/
@@ -172,7 +172,7 @@ json-server-field-guide/
 
 ---
 
-## 🚀 Quick Start & Local Development
+## Quick Start & Local Development
 
 ### Prerequisites
 - **Node.js**: `v22.12.0` or newer (matching json-server's engine requirements)
@@ -213,7 +213,7 @@ npm run typecheck && npm run build
 
 ---
 
-## 🧭 Machine-Readable & Agent Discovery
+## Machine-Readable & Agent Discovery
 
 This guide is built to be first-class for AI agents and automated tools:
 - **LLM Full Context:** [`/llms.txt`](https://json-server-field-guide.vercel.app/llms.txt) and [`/llms-full.txt`](https://json-server-field-guide.vercel.app/llms-full.txt)
@@ -222,7 +222,7 @@ This guide is built to be first-class for AI agents and automated tools:
 
 ---
 
-## 👤 Author & Acknowledgments
+## Author & Acknowledgments
 
 Created with passion and engineering discipline by:
 
@@ -235,6 +235,6 @@ Special thanks to:
 
 ---
 
-## 📄 License
+## License
 
 This repository is licensed under the [MIT License](LICENSE).
