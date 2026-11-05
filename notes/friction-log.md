@@ -70,11 +70,17 @@ Real obstacles encountered while using the Thally platform.
 
 ## 2026-11-05 — Phase 4: Production Polish and Deployment Handoff
 
-- **Thally Cloud deployment failure (`managed_runtime_unavailable`).**
-  During automated Cloud deployment (deployment `cb101d12-b0e8-4694-90f8-acece6f8ba42`), the platform failed with `managed_runtime_unavailable`. The deployment artifact builds cleanly locally (`npm run build` with Turbopack), but the managed runtime control plane refused the deployment handoff. _Workaround: Documented fallback manual Cloudflare Worker / OpenNext deployment steps in `notes/handoff.md`._
+- **Thally Cloud provisioning failure on consecutive deployments (`managed_runtime_unavailable`).**
+  - **Deployments:** `cb101d12-b0e8-4694-90f8-acece6f8ba42` (initial) and `be13ef13-ba31-4e7a-ad33-50e7376df505` (retry).
+  - **Timeline:** Publishing triggered via Thally Cloud dashboard. Both attempts failed within 10–15 seconds at the initial provisioning step.
+  - **Error Code:** `managed_runtime_unavailable`.
+  - **Dashboard Display:** The progress indicator halted at "Provisioning runtime environment" with an error badge: `managed_runtime_unavailable: The managed runtime control plane is temporarily unavailable. Please retry shortly or contact support.` No build runner was spun up, no git checkout took place, and no build or container logs were generated.
+  - **Retry Outcome:** Immediate retry (`be13ef13-ba31-4e7a-ad33-50e7376df505`) failed with the identical status and error code.
+  - **Diagnosis & Workaround:** A read-only audit of the repository confirmed all configuration files (`docs.json`, `starter-release.json`, `.github/`, `scripts/`, `src/mdx/fg/`) are fully valid and pass all CI checks (`thally check --ci`, `typecheck`, `next build`). The failure is strictly an upstream control-plane hypervisor outage rather than a project defect. Fallback self-hosted Cloudflare Worker steps are documented in `notes/handoff.md`, and a zero-code-change Vercel fallback guide is documented in `notes/vercel-fallback.md`.
 
 - **Three Key Platform Observations:**
   1. *What worked exceptionally well*: Custom MDX components registered via `src/mdx/custom-components.tsx` seamlessly hydrate and run interactive client-side logic (`<Console />`, `<TryIt />`, `<Verified />`) with zero server/client hydration mismatches. Turbopack build times are sub-second (`~400ms`).
   2. *Friction*: Brand asset theming (`/api/brand/logo`) relies heavily on `next-themes` client state (`useReaderTheme()`). Headless testing tools that simply toggle CSS `.dark` classes fail to trigger React re-renders unless the `button[aria-label="Toggle theme"]` control is explicitly dispatched.
   3. *Suggested improvements*: Provide an authored `mode: "landing"` or `layout: "landing"` option in frontmatter to omit sidebar and docs navigation tabs cleanly without requiring custom `<HideShell />` CSS overrides. Provide formal recognition for user-owned scripts in `scripts/` or a dedicated user script convention.
+
 
