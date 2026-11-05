@@ -97,7 +97,7 @@ export function Landing() {
               <span className="fg-badge-method">GET</span>
               <h3 className="fg-recipe-title">Operator Filters</h3>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div className="fg-recipe-query-bar">
               <code className="fg-recipe-query">/tasks?status=open&priority:gte=2</code>
               <span className="fg-badge-recorded">recorded fixture</span>
             </div>
@@ -117,7 +117,7 @@ export function Landing() {
               <span className="fg-badge-method">GET</span>
               <h3 className="fg-recipe-title">Multi-Key Sort</h3>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div className="fg-recipe-query-bar">
               <code className="fg-recipe-query">/tasks?_sort=-priority,title</code>
               <span className="fg-badge-recorded">recorded fixture</span>
             </div>
@@ -140,7 +140,7 @@ export function Landing() {
               <span className="fg-badge-method">GET</span>
               <h3 className="fg-recipe-title">Pagination Envelope</h3>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div className="fg-recipe-query-bar">
               <code className="fg-recipe-query">/tasks?_page=1&_per_page=2</code>
               <span className="fg-badge-recorded">recorded fixture</span>
             </div>
@@ -168,7 +168,7 @@ export function Landing() {
               <span className="fg-badge-method">GET</span>
               <h3 className="fg-recipe-title">Relationship Embedding</h3>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div className="fg-recipe-query-bar">
               <code className="fg-recipe-query">/tasks/3?_embed=project</code>
               <span className="fg-badge-recorded">recorded fixture</span>
             </div>
